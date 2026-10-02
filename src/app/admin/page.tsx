@@ -56,7 +56,7 @@ export default function AdminDashboard() {
       }
 
       // 2. Fetch Payment Methods
-      const { data: payData } = await supabase.from('payment_methods').select('*').order('created_at', { ascending: true });
+      const { data: payData } = await supabase.from('payment_methods').select('*');
       if (payData && payData.length > 0) setPayments(payData);
 
       // 3. Fetch Products with sizes
@@ -100,8 +100,10 @@ export default function AdminDashboard() {
 
       const configValueJSON = JSON.stringify(payloadObj);
 
+      // Save ONLY id, key, and value to prevent PGRST204 error on unexisting table columns
       const { error } = await supabase.from('store_config').upsert({
-        ...payloadObj,
+        id: configId,
+        key: 'store_settings',
         value: configValueJSON
       }, { onConflict: 'id' });
 
@@ -547,21 +549,60 @@ export default function AdminDashboard() {
                   2. Gestión del Banner Principal (Hero Landing Page)
                 </h3>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                    URL de la Imagen Publicitaria Principal del Hero
+                    Imagen Publicitaria del Banner (Archivo Local o URL)
                   </label>
-                  <input
-                    type="url"
-                    value={config.hero_image_url || ''}
-                    onChange={(e) => setConfig({ ...config, hero_image_url: e.target.value })}
-                    placeholder="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000"
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono text-xs"
-                  />
+                  
+                  {/* Local File Picker */}
+                  <div className="flex flex-col sm:flex-row gap-3 items-stretch">
+                    <label className="flex-1 bg-zinc-900 border border-dashed border-zinc-700 hover:border-cyan-500 rounded-xl px-4 py-3 cursor-pointer text-center flex items-center justify-center gap-2 text-xs font-bold text-cyan-400 transition-all">
+                      <Sparkles className="w-4 h-4" />
+                      <span>📁 Seleccionar Imagen de mi Dispositivo (PC / Móvil)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 3 * 1024 * 1024) {
+                              showNotification('La imagen es mayor a 3MB. Por favor elige una imagen más ligera.', true);
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              if (reader.result) {
+                                setConfig({ ...config, hero_image_url: reader.result as string });
+                                showNotification('Imagen cargada localmente. Presiona "Guardar Configuración" para aplicar.');
+                              }
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {/* URL Text Fallback Input */}
+                  <div className="space-y-1">
+                    <span className="text-[11px] text-zinc-400">O pega una URL directa de imagen web:</span>
+                    <input
+                      type="url"
+                      value={config.hero_image_url || ''}
+                      onChange={(e) => setConfig({ ...config, hero_image_url: e.target.value })}
+                      placeholder="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000"
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500 font-mono"
+                    />
+                  </div>
+
                   {config.hero_image_url && (
-                    <div className="mt-2 flex items-center gap-3 bg-zinc-900 p-2 rounded-xl border border-zinc-800">
-                      <img src={config.hero_image_url} alt="Vista Previa Banner" className="w-16 h-16 object-cover rounded-lg" />
-                      <span className="text-xs text-zinc-400">Vista previa del banner publicitario</span>
+                    <div className="mt-2 flex items-center gap-4 bg-zinc-900 p-3 rounded-xl border border-zinc-800">
+                      <img src={config.hero_image_url} alt="Vista Previa Banner" className="w-20 h-20 object-cover rounded-xl border border-zinc-800 shadow-md" />
+                      <div>
+                        <p className="text-xs font-bold text-white">Vista previa del banner publicitario</p>
+                        <p className="text-[11px] text-cyan-400 mt-0.5">Listo para guardarse en la configuración de la tienda</p>
+                      </div>
                     </div>
                   )}
                 </div>

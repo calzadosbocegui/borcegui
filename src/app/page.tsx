@@ -38,13 +38,14 @@ export default function Home() {
           setConfig(prev => ({ ...prev, ...parsedConfig }));
         }
 
-        // Fetch Payment Methods
-        const { data: payData } = await supabase
-          .from('payment_methods')
-          .select('*')
-          .eq('is_active', true)
-          .order('created_at', { ascending: true });
-        if (payData && payData.length > 0) setPaymentMethods(payData);
+        // Fetch Payment Methods (Direct select without order/filter columns that trigger 400 Bad Request)
+        const { data: payData, error: payErr } = await supabase.from('payment_methods').select('*');
+        if (payErr) {
+          console.error('Error cargando payment_methods:', payErr);
+        } else if (payData && payData.length > 0) {
+          const active = payData.filter((p: any) => p.is_active !== false);
+          setPaymentMethods(active.length > 0 ? active : payData);
+        }
 
         // Fetch Products with Sizes
         const { data: prodData } = await supabase
