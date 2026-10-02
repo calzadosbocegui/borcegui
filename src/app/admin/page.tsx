@@ -620,40 +620,57 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-300">Fotografías del Calzado</label>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="text"
-                      value={editingProduct.images?.[0] || ''}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, images: [e.target.value] })}
-                      placeholder="URL o sube desde tu dispositivo..."
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
-                    />
-                    <label className="cursor-pointer px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-cyan-400 text-xs font-bold rounded-xl border border-zinc-700 whitespace-nowrap">
-                      Subir Foto
+                {/* Multi-Image Gallery Manager (Allows 6-8+ images) */}
+                <div className="space-y-2 col-span-2 pt-2 border-t border-zinc-800">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <label className="text-xs font-bold text-cyan-400 block">Galería de Fotografías ({editingProduct.images?.length || 0})</label>
+                      <span className="text-[10px] text-zinc-500">Puedes agregar múltiples imágenes (6-8 fotos) por calzado</span>
+                    </div>
+                    <label className="cursor-pointer px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-bold rounded-xl border border-cyan-500/30 flex items-center gap-1.5">
+                      + Subir Nueva Foto
                       <input
                         type="file"
                         accept="image/*"
+                        multiple
                         className="hidden"
                         onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
+                          const files = Array.from(e.target.files || []);
+                          files.forEach((file) => {
                             const reader = new FileReader();
                             reader.onload = (uploadEvent) => {
                               const result = uploadEvent.target?.result as string;
                               if (result) {
-                                setEditingProduct({
-                                  ...editingProduct,
-                                  images: [result, ...(editingProduct.images?.slice(1) || [])],
-                                });
+                                setEditingProduct((prev) => ({
+                                  ...prev,
+                                  images: [...(prev?.images || []), result],
+                                }));
                               }
                             };
                             reader.readAsDataURL(file);
-                          }
+                          });
                         }}
                       />
                     </label>
+                  </div>
+
+                  {/* Images List */}
+                  <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto p-1 bg-zinc-950 rounded-xl border border-zinc-900">
+                    {(editingProduct.images || []).map((imgUrl, imgIdx) => (
+                      <div key={imgIdx} className="relative group rounded-lg overflow-hidden aspect-square border border-zinc-800 bg-zinc-900">
+                        <img src={imgUrl} alt={`Foto ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = (editingProduct.images || []).filter((_, i) => i !== imgIdx);
+                            setEditingProduct({ ...editingProduct, images: updated });
+                          }}
+                          className="absolute top-1 right-1 p-1 bg-black/70 text-red-400 hover:text-red-300 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
 

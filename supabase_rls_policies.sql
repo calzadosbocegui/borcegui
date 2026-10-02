@@ -4,7 +4,13 @@
 -- URL: https://supabase.com/dashboard/project/swqtwrmmhskfchflvrxo/sql
 -- ====================================================================
 
--- 1. TABLA: store_config
+-- 1. MIGRACIONES DE COLUMNAS (Manejo de columnas faltantes)
+ALTER TABLE IF EXISTS store_config ADD COLUMN IF NOT EXISTS store_address TEXT;
+ALTER TABLE IF EXISTS store_config ADD COLUMN IF NOT EXISTS whatsapp_number TEXT;
+ALTER TABLE IF EXISTS store_config ADD COLUMN IF NOT EXISTS store_name TEXT;
+ALTER TABLE IF EXISTS products ADD COLUMN IF NOT EXISTS model_code TEXT;
+
+-- 2. TABLA: store_config
 ALTER TABLE IF EXISTS store_config ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Permitir lectura publica de store_config" ON store_config;
