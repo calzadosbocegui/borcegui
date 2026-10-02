@@ -1,8 +1,15 @@
 export interface StoreConfig {
   id: string;
+  key?: string;
   whatsapp_number: string;
   store_name: string;
   store_address: string;
+  instagram_handle?: string;
+  instagram_url?: string;
+  hero_title?: string;
+  hero_subtitle?: string;
+  hero_image_url?: string;
+  hero_cta_text?: string;
   updated_at?: string;
 }
 

@@ -1,17 +1,21 @@
 "use client";
 
 import React from 'react';
-import { Product } from '@/types/database';
+import { Product, StoreConfig } from '@/types/database';
 import { ShieldCheck, Cpu, Zap, RotateCw, Sparkles, CheckCircle2 } from 'lucide-react';
 
 interface HeroSectionProps {
   heroProduct?: Product | null;
+  config?: StoreConfig | null;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct }) => {
-  const heroImage = heroProduct?.images?.[0] || "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000";
-  const heroTitle = heroProduct?.name || "Borceguí Performance Dial";
-  const heroCode = heroProduct?.model_code || "EDICIÓN ESPECIAL";
+export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct, config }) => {
+  const heroImage = config?.hero_image_url || heroProduct?.images?.[0] || "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000";
+  const mainTitle = config?.hero_title || "INNOVACIÓN TOTAL EN TU PASO.";
+  const subTitle = config?.hero_subtitle || "FÁCIL DE PONER, FÁCIL DE AJUSTAR.";
+  const ctaText = config?.hero_cta_text || "Explorar Catálogo 2026";
+  const badgeCode = heroProduct?.model_code || "COLECCIÓN OFICIAL";
+  const badgeTitle = heroProduct?.name || "Borceguí Performance Dial";
 
   return (
     <section id="inicio" className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32 bg-zinc-950 text-white">
@@ -26,13 +30,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct }) => {
           <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold tracking-wide uppercase">
               <Sparkles className="w-3.5 h-3.5 animate-spin" />
-              Colección Oficial @borcegui2026
+              Colección Oficial {config?.instagram_handle || '@borcegui2026'}
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
-              INNOVACIÓN TOTAL EN TU PASO. <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-cyan-200 to-white bg-clip-text text-transparent">
-                FÁCIL DE PONER, FÁCIL DE AJUSTAR.
+              {mainTitle} <br />
+              <span className="bg-gradient-to-r from-cyan-400 via-cyan-200 to-white bg-clip-text text-transparent uppercase">
+                {subTitle}
               </span>
             </h1>
 
@@ -62,7 +66,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct }) => {
                 href="#catalogo"
                 className="px-8 py-4 bg-cyan-400 hover:bg-cyan-300 text-black font-black text-sm uppercase tracking-wider rounded-xl shadow-lg shadow-cyan-500/20 transition-all text-center"
               >
-                Explorar Catálogo 2026
+                {ctaText}
               </a>
               <a
                 href="#tecnologia"
@@ -79,7 +83,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct }) => {
               <div className="aspect-[4/5] rounded-2xl overflow-hidden relative">
                 <img
                   src={heroImage}
-                  alt={heroTitle}
+                  alt={badgeTitle}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80" />
@@ -88,8 +92,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct }) => {
                 <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-zinc-950/80 backdrop-blur-md border border-zinc-800/80 text-left">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-cyan-400 font-bold uppercase tracking-wider">{heroCode}</p>
-                      <h4 className="text-base font-extrabold text-white">{heroTitle}</h4>
+                      <p className="text-xs text-cyan-400 font-bold uppercase tracking-wider">{badgeCode}</p>
+                      <h4 className="text-base font-extrabold text-white">{badgeTitle}</h4>
                     </div>
                     <span className="px-2.5 py-1 bg-cyan-500 text-black text-xs font-black rounded-lg">
                       NEW

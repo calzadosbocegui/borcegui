@@ -53,12 +53,19 @@ export const StoreInfoSection: React.FC<StoreInfoSectionProps> = ({ config, paym
               </div>
             </div>
 
-            <div className="pt-4 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400">
+            <div className="pt-4 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400 flex-wrap gap-2">
               <span className="flex items-center gap-1.5 text-cyan-400 font-semibold">
                 <ShieldCheck className="w-4 h-4" />
                 Garantía de Calzado Original
               </span>
-              <span>Caracas, VE</span>
+              <a
+                href={config?.instagram_url || "https://instagram.com/borcegui2026"}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-cyan-400 hover:underline font-mono font-bold"
+              >
+                {config?.instagram_handle || "@borcegui2026"} ↗
+              </a>
             </div>
           </div>
 

@@ -22,9 +22,21 @@ export default function Home() {
   useEffect(() => {
     async function loadData() {
       try {
-        // Fetch Store Config
-        const { data: configData } = await supabase.from('store_config').select('*').single();
-        if (configData) setConfig(configData);
+        // Fetch Store Config (Unificado)
+        const { data: configData } = await supabase.from('store_config').select('*');
+        if (configData && configData.length > 0) {
+          const item = configData.find((c: any) => c.key === 'store_settings' || c.id === '1') || configData[0];
+          let parsedConfig: Partial<StoreConfig> = { ...item };
+          if (item.value && typeof item.value === 'string') {
+            try {
+              const parsed = JSON.parse(item.value);
+              parsedConfig = { ...parsedConfig, ...parsed };
+            } catch (e) {
+              // plain text
+            }
+          }
+          setConfig(prev => ({ ...prev, ...parsedConfig }));
+        }
 
         // Fetch Payment Methods
         const { data: payData } = await supabase
@@ -62,8 +74,8 @@ export default function Home() {
         {/* Floating Cart Modal / Drawer */}
         <CartDrawer whatsappNumber={config.whatsapp_number} />
 
-        {/* Hero Section (dinámico con el primer producto destacado) */}
-        <HeroSection heroProduct={products[0]} />
+        {/* Hero Section (dinámico con el Banner del Admin y fallback al producto destacado) */}
+        <HeroSection heroProduct={products[0]} config={config} />
 
         {/* History Section */}
         <HistorySection />
@@ -91,15 +103,16 @@ export default function Home() {
 
             <div className="flex items-center gap-6">
               <a
-                href="https://instagram.com/borcegui2026"
+                href={config.instagram_url || "https://instagram.com/borcegui2026"}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-cyan-400 transition-colors font-mono"
+                className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors font-mono font-bold bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/30"
               >
-                @borcegui2026
+                <span>📸</span>
+                <span>{config.instagram_handle || "@borcegui2026"}</span>
               </a>
               <span>•</span>
-              <span>Chacao, Caracas</span>
+              <span className="text-zinc-400">Chacao, Caracas</span>
             </div>
           </div>
         </footer>

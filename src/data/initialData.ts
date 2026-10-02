@@ -2,9 +2,16 @@ import { Product, StoreConfig, PaymentMethod } from '@/types/database';
 
 export const INITIAL_STORE_CONFIG: StoreConfig = {
   id: '1',
+  key: 'store_settings',
   store_name: 'Borceguí',
   whatsapp_number: '+584246678858',
   store_address: 'Calle Páez, Edificio Capri, Chacao, Caracas, Venezuela',
+  instagram_handle: '@borcegui2026',
+  instagram_url: 'https://instagram.com/borcegui2026',
+  hero_title: 'INNOVACIÓN TOTAL EN TU PASO.',
+  hero_subtitle: 'FÁCIL DE PONER, FÁCIL DE AJUSTAR.',
+  hero_image_url: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000',
+  hero_cta_text: 'Explorar Catálogo 2026',
 };
 
 export const INITIAL_PAYMENT_METHODS: PaymentMethod[] = [

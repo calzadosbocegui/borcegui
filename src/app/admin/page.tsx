@@ -83,26 +83,33 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const configId = config.id || '1';
-      const configValueJSON = JSON.stringify({
-        whatsapp_number: config.whatsapp_number,
-        store_address: config.store_address,
-        store_name: config.store_name || 'Borceguí',
-      });
-
-      const { error } = await supabase.from('store_config').upsert({
+      const payloadObj = {
         id: configId,
         key: 'store_settings',
-        value: configValueJSON,
+        store_name: config.store_name || 'Borceguí',
         whatsapp_number: config.whatsapp_number,
         store_address: config.store_address,
-        store_name: config.store_name || 'Borceguí',
-      });
+        instagram_handle: config.instagram_handle || '@borcegui2026',
+        instagram_url: config.instagram_url || 'https://instagram.com/borcegui2026',
+        hero_title: config.hero_title || 'INNOVACIÓN TOTAL EN TU PASO.',
+        hero_subtitle: config.hero_subtitle || 'FÁCIL DE PONER, FÁCIL DE AJUSTAR.',
+        hero_image_url: config.hero_image_url || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000',
+        hero_cta_text: config.hero_cta_text || 'Explorar Catálogo 2026',
+        updated_at: new Date().toISOString()
+      };
+
+      const configValueJSON = JSON.stringify(payloadObj);
+
+      const { error } = await supabase.from('store_config').upsert({
+        ...payloadObj,
+        value: configValueJSON
+      }, { onConflict: 'id' });
 
       if (error) {
         console.error('Supabase store_config error:', error);
         showNotification(`Error de Supabase (${error.code}): ${error.message}. ${error.details || ''}`, true);
       } else {
-        showNotification('¡Configuración de la tienda actualizada correctamente en Supabase!');
+        showNotification('¡Configuración unificada de la tienda guardada correctamente en Supabase!');
       }
     } catch (err: any) {
       console.error('Save config exception:', err);
@@ -469,45 +476,145 @@ export default function AdminDashboard() {
               </p>
             </div>
 
-            <form onSubmit={handleSaveConfig} className="space-y-5">
-              <div className="space-y-2">
-                <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                  Número de WhatsApp Oficial (Pedidos)
-                </label>
-                <input
-                  type="text"
-                  value={config.whatsapp_number}
-                  onChange={(e) => setConfig({ ...config, whatsapp_number: e.target.value })}
-                  placeholder="+584246678858"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono"
-                  required
-                />
-                <p className="text-[11px] text-zinc-500">
-                  Formato con código de país (Ej: +58 424-6678858). A este número llegarán las compras procesadas desde el carrito.
-                </p>
+            <form onSubmit={handleSaveConfig} className="space-y-6">
+              {/* Bloque 1: Contacto y Redes */}
+              <div className="space-y-4 bg-zinc-950 p-5 rounded-2xl border border-zinc-800/80">
+                <h3 className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                  1. Datos Principales de Contacto & Instagram
+                </h3>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                      Número de WhatsApp Oficial (Pedidos)
+                    </label>
+                    <input
+                      type="text"
+                      value={config.whatsapp_number}
+                      onChange={(e) => setConfig({ ...config, whatsapp_number: e.target.value })}
+                      placeholder="+584246678858"
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                      Usuario de Instagram
+                    </label>
+                    <input
+                      type="text"
+                      value={config.instagram_handle || ''}
+                      onChange={(e) => setConfig({ ...config, instagram_handle: e.target.value })}
+                      placeholder="@borcegui2026"
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                    Enlace URL Directo a Instagram
+                  </label>
+                  <input
+                    type="url"
+                    value={config.instagram_url || ''}
+                    onChange={(e) => setConfig({ ...config, instagram_url: e.target.value })}
+                    placeholder="https://instagram.com/borcegui2026"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono text-xs"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                    Dirección Física de la Tienda / Showroom
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={config.store_address}
+                    onChange={(e) => setConfig({ ...config, store_address: e.target.value })}
+                    placeholder="Calle Páez, Edificio Capri, Chacao, Caracas, Venezuela"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                  Dirección Física de la Tienda / Showroom
-                </label>
-                <textarea
-                  rows={3}
-                  value={config.store_address}
-                  onChange={(e) => setConfig({ ...config, store_address: e.target.value })}
-                  placeholder="Calle Páez, Edificio Capri, Chacao, Caracas, Venezuela"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
-                  required
-                />
+              {/* Bloque 2: Gestión Total del Banner Principal (Hero) */}
+              <div className="space-y-4 bg-zinc-950 p-5 rounded-2xl border border-zinc-800/80">
+                <h3 className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
+                  2. Gestión del Banner Principal (Hero Landing Page)
+                </h3>
+
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                    URL de la Imagen Publicitaria Principal del Hero
+                  </label>
+                  <input
+                    type="url"
+                    value={config.hero_image_url || ''}
+                    onChange={(e) => setConfig({ ...config, hero_image_url: e.target.value })}
+                    placeholder="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono text-xs"
+                  />
+                  {config.hero_image_url && (
+                    <div className="mt-2 flex items-center gap-3 bg-zinc-900 p-2 rounded-xl border border-zinc-800">
+                      <img src={config.hero_image_url} alt="Vista Previa Banner" className="w-16 h-16 object-cover rounded-lg" />
+                      <span className="text-xs text-zinc-400">Vista previa del banner publicitario</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                      Título Principal del Hero
+                    </label>
+                    <input
+                      type="text"
+                      value={config.hero_title || ''}
+                      onChange={(e) => setConfig({ ...config, hero_title: e.target.value })}
+                      placeholder="INNOVACIÓN TOTAL EN TU PASO."
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                      Subtítulo Destacado (Gradiente)
+                    </label>
+                    <input
+                      type="text"
+                      value={config.hero_subtitle || ''}
+                      onChange={(e) => setConfig({ ...config, hero_subtitle: e.target.value })}
+                      placeholder="FÁCIL DE PONER, FÁCIL DE AJUSTAR."
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                    Texto del Botón Principal (CTA)
+                  </label>
+                  <input
+                    type="text"
+                    value={config.hero_cta_text || ''}
+                    onChange={(e) => setConfig({ ...config, hero_cta_text: e.target.value })}
+                    placeholder="Explorar Catálogo 2026"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all"
+                className="w-full py-4 bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all uppercase tracking-wider"
               >
-                <Save className="w-4 h-4" />
-                Guardar Configuración en Supabase
+                <Save className="w-4 h-4 stroke-[3]" />
+                Guardar Configuración Unificada en Supabase
               </button>
             </form>
           </div>
