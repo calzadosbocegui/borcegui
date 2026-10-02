@@ -20,7 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const images = product.images && product.images.length > 0
     ? product.images
-    : ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800'];
+    : ['https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800'];
 
   const sizes = product.product_sizes || [];
 
@@ -195,24 +195,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
 
-      {/* FULL PRODUCT DETAILS & MULTI-IMAGE CAROUSEL MODAL */}
+      {/* FULL PRODUCT DETAILS & MULTI-IMAGE CAROUSEL MODAL (OPTIMIZED FOR MOBILE SCROLL & CLEAN SIZES) */}
       {isDetailModalOpen && (
         <div 
           onClick={() => setIsDetailModalOpen(false)}
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-black/85 backdrop-blur-md flex items-start sm:items-center justify-center p-3 sm:p-6"
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-4xl w-full p-6 sm:p-8 space-y-6 my-8 relative animate-in zoom-in-95 duration-200"
+            className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-4xl w-full p-5 sm:p-8 space-y-6 my-auto relative animate-in zoom-in-95 duration-200 shadow-2xl max-h-[90vh] overflow-y-auto"
           >
-            <button
-              onClick={() => setIsDetailModalOpen(false)}
-              className="absolute top-6 right-6 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors"
-            >
-              ✕
-            </button>
+            {/* Header Sticky Bar / Close Button for Easy Mobile Exit */}
+            <div className="sticky top-0 z-20 -mt-2 -mx-2 pt-2 pb-3 px-2 bg-zinc-950/95 backdrop-blur-md flex items-center justify-between border-b border-zinc-800/60 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/30">
+                  {product.model_code || 'BORCEGUÍ'}
+                </span>
+                <span className="text-xs text-zinc-400 font-medium truncate max-w-[180px] sm:max-w-none">
+                  {product.name}
+                </span>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500 text-black font-extrabold text-xs hover:bg-cyan-400 transition-all shadow-md shadow-cyan-500/20 active:scale-95"
+              >
+                <span>Cerrar</span>
+                <span className="text-base leading-none">✕</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
               
               {/* Left Column: Interactive Main Zoom Image & Gallery Thumbnails */}
               <div className="space-y-4">
@@ -222,8 +235,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-500 cursor-zoom-in"
                   />
-                  <div className="absolute top-3 left-3 bg-black/60 text-cyan-400 text-[10px] font-mono px-2 py-1 rounded border border-zinc-800">
-                    Pasa el cursor para Zoom 🔍
+                  <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md text-cyan-400 text-[10px] font-mono px-2.5 py-1 rounded-lg border border-zinc-800">
+                    🔍 Toca / Pasa el cursor para Zoom
                   </div>
                 </div>
 
@@ -289,7 +302,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   </div>
                 )}
 
-                {/* Size picker in Modal */}
+                {/* Size picker in Modal (Clean Size text, no redundant disp) */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-bold text-zinc-300">Seleccionar Talla Disponibles:</span>
@@ -320,7 +333,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                               : 'bg-zinc-950/40 text-zinc-600 border-zinc-900 line-through'
                           }`}
                         >
-                          {s.size} ({s.stock} disp.)
+                          {s.size}
                         </button>
                       );
                     })}

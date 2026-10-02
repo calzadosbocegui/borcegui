@@ -69,7 +69,7 @@ export const HeroSection: React.FC = () => {
             <div className="relative mx-auto max-w-md rounded-3xl overflow-hidden border border-zinc-800 bg-gradient-to-b from-zinc-900 to-zinc-950 p-4 shadow-2xl group">
               <div className="aspect-[4/5] rounded-2xl overflow-hidden relative">
                 <img
-                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000"
+                  src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000"
                   alt="Calzado Borceguí y Caja Oficial"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />

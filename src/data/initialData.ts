@@ -25,7 +25,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 85.00,
     category: 'deportiva',
     images: [
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800',
+      'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800',
       'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=800'
     ],
     features: ['Dial Micrométrico Pro', 'Guayas de acero', 'Transpirable Mesh 3D'],

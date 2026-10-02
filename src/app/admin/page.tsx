@@ -69,8 +69,10 @@ export default function AdminDashboard() {
     e.preventDefault();
     setLoading(true);
     try {
+      const configId = config.id || '1';
       const { error } = await supabase.from('store_config').upsert({
-        id: config.id || '1',
+        id: configId,
+        key: 'store_settings',
         whatsapp_number: config.whatsapp_number,
         store_address: config.store_address,
         store_name: config.store_name || 'Borceguí',
@@ -235,7 +237,7 @@ export default function AdminDashboard() {
         name: newPay.name,
         details: newPay.details,
         is_active: newPay.is_active
-      });
+      }, { onConflict: 'id' });
 
       if (error) {
         console.error('Error guardando método de pago:', error);
