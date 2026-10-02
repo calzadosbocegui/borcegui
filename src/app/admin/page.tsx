@@ -56,21 +56,35 @@ export default function AdminDashboard() {
     }
   };
 
-  const showNotification = (msg: string) => {
+  const showNotification = (msg: string, isError = false) => {
     setStatusMessage(msg);
-    setTimeout(() => setStatusMessage(null), 4000);
+    setStatusIsError(isError);
+    setTimeout(() => setStatusMessage(null), 6000);
   };
+
+  const [statusIsError, setStatusIsError] = useState(false);
 
   // --- STORE CONFIG SAVE ---
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.from('store_config').upsert(config);
-      if (error) throw error;
-      showNotification('¡Configuración de la tienda actualizada correctamente en Supabase!');
+      const { error } = await supabase.from('store_config').upsert({
+        id: config.id || '1',
+        whatsapp_number: config.whatsapp_number,
+        store_address: config.store_address,
+        store_name: config.store_name || 'Borceguí',
+      });
+
+      if (error) {
+        console.error('Supabase store_config error:', error);
+        showNotification(`Error de Supabase (${error.code}): ${error.message}. ${error.details || ''}`, true);
+      } else {
+        showNotification('¡Configuración de la tienda actualizada correctamente en Supabase!');
+      }
     } catch (err: any) {
-      showNotification(`Guardado en estado local: ${err?.message || 'Correcto'}`);
+      console.error('Save config exception:', err);
+      showNotification(`Excepción al guardar: ${err?.message || err}`, true);
     } finally {
       setLoading(false);
     }
@@ -79,18 +93,19 @@ export default function AdminDashboard() {
   // --- PRODUCT MANAGEMENT ---
   const handleOpenNewProduct = () => {
     setEditingProduct({
+      id: `prod-${Date.now()}`,
       name: '',
       description: '',
       price: 85.00,
       category: 'deportiva',
       images: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800'],
-      features: ['Dial Pro 1-click', 'Guayas de acero'],
+      features: ['Dial Micrométrico', 'Guayas de acero'],
     });
     setEditingSizes([
-      { size: 39, stock: 5 },
-      { size: 40, stock: 10 },
-      { size: 41, stock: 10 },
-      { size: 42, stock: 8 },
+      { size: 36, stock: 5 },
+      { size: 37, stock: 10 },
+      { size: 38, stock: 10 },
+      { size: 39, stock: 8 },
     ]);
     setIsProductModalOpen(true);
   };
@@ -122,20 +137,9 @@ export default function AdminDashboard() {
       product_sizes: editingSizes.map((s, idx) => ({ id: `size-${idx}`, product_id: prodId, size: s.size, stock: Number(s.stock) }))
     };
 
-    // Update Local State
-    setProducts(prev => {
-      const idx = prev.findIndex(p => p.id === prodId);
-      if (idx > -1) {
-        const updated = [...prev];
-        updated[idx] = newProd;
-        return updated;
-      }
-      return [newProd, ...prev];
-    });
-
-    // Save to Supabase
+    // Attempt Supabase Upsert
     try {
-      await supabase.from('products').upsert({
+      const { error: prodError } = await supabase.from('products').upsert({
         id: newProd.id,
         name: newProd.name,
         description: newProd.description,
@@ -144,29 +148,59 @@ export default function AdminDashboard() {
         images: newProd.images
       });
 
-      // Insert/Upsert sizes
+      if (prodError) {
+        console.error('Error guardando producto en Supabase:', prodError);
+        showNotification(`Error Supabase Productos [${prodError.code}]: ${prodError.message}`, true);
+        setLoading(false);
+        return;
+      }
+
+      // Delete & Insert sizes
       await supabase.from('product_sizes').delete().eq('product_id', newProd.id);
-      await supabase.from('product_sizes').insert(
-        editingSizes.map(s => ({ product_id: newProd.id, size: s.size, stock: s.stock }))
+      const { error: sizeError } = await supabase.from('product_sizes').insert(
+        editingSizes.map(s => ({ product_id: newProd.id, size: s.size, stock: Number(s.stock) }))
       );
 
-      showNotification('¡Producto guardado exitosamente en Supabase!');
+      if (sizeError) {
+        console.error('Error guardando tallas en Supabase:', sizeError);
+        showNotification(`Producto guardado, pero falló guardar tallas: ${sizeError.message}`, true);
+      } else {
+        showNotification('¡Producto y tallas guardados exitosamente en Supabase!');
+      }
+
+      // Update Local State on Success
+      setProducts(prev => {
+        const idx = prev.findIndex(p => p.id === prodId);
+        if (idx > -1) {
+          const updated = [...prev];
+          updated[idx] = newProd;
+          return updated;
+        }
+        return [newProd, ...prev];
+      });
+
+      setIsProductModalOpen(false);
     } catch (err: any) {
-      showNotification('¡Producto guardado en sesión local!');
+      console.error('Excepción guardando producto:', err);
+      showNotification(`Error de red o ejecución: ${err?.message || err}`, true);
     } finally {
       setLoading(false);
-      setIsProductModalOpen(false);
     }
   };
 
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar este calzado?')) return;
-    setProducts(prev => prev.filter(p => p.id !== id));
     try {
-      await supabase.from('products').delete().eq('id', id);
-      showNotification('Producto eliminado.');
-    } catch (err) {
-      showNotification('Producto eliminado localmente.');
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) {
+        console.error('Error eliminando producto:', error);
+        showNotification(`Error al eliminar de Supabase: ${error.message}`, true);
+      } else {
+        setProducts(prev => prev.filter(p => p.id !== id));
+        showNotification('Producto eliminado de Supabase.');
+      }
+    } catch (err: any) {
+      showNotification(`Excepción al eliminar: ${err?.message || err}`, true);
     }
   };
 
@@ -183,31 +217,47 @@ export default function AdminDashboard() {
       is_active: editingPayment.is_active ?? true,
     };
 
-    setPayments(prev => {
-      const idx = prev.findIndex(p => p.id === payId);
-      if (idx > -1) {
-        const updated = [...prev];
-        updated[idx] = newPay;
-        return updated;
-      }
-      return [...prev, newPay];
-    });
-
     try {
-      await supabase.from('payment_methods').upsert(newPay);
-      showNotification('Método de pago actualizado.');
-    } catch (err) {
-      showNotification('Método de pago guardado localmente.');
-    } finally {
-      setIsPaymentModalOpen(false);
+      const { error } = await supabase.from('payment_methods').upsert({
+        id: newPay.id,
+        name: newPay.name,
+        details: newPay.details,
+        is_active: newPay.is_active
+      });
+
+      if (error) {
+        console.error('Error guardando método de pago:', error);
+        showNotification(`Error Supabase Métodos de Pago: ${error.message}`, true);
+      } else {
+        setPayments(prev => {
+          const idx = prev.findIndex(p => p.id === payId);
+          if (idx > -1) {
+            const updated = [...prev];
+            updated[idx] = newPay;
+            return updated;
+          }
+          return [...prev, newPay];
+        });
+        showNotification('Método de pago guardado exitosamente en Supabase.');
+        setIsPaymentModalOpen(false);
+      }
+    } catch (err: any) {
+      showNotification(`Excepción método de pago: ${err?.message || err}`, true);
     }
   };
 
   const handleDeletePayment = async (id: string) => {
-    setPayments(prev => prev.filter(p => p.id !== id));
     try {
-      await supabase.from('payment_methods').delete().eq('id', id);
-    } catch (e) {}
+      const { error } = await supabase.from('payment_methods').delete().eq('id', id);
+      if (error) {
+        showNotification(`Error al eliminar método de pago: ${error.message}`, true);
+      } else {
+        setPayments(prev => prev.filter(p => p.id !== id));
+        showNotification('Método de pago eliminado de Supabase.');
+      }
+    } catch (e: any) {
+      showNotification(`Excepción al eliminar: ${e?.message || e}`, true);
+    }
   };
 
   return (
@@ -250,8 +300,12 @@ export default function AdminDashboard() {
         
         {/* Status Toast */}
         {statusMessage && (
-          <div className="mb-6 p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 text-sm font-semibold flex items-center gap-3 animate-in fade-in duration-300">
-            <CheckCircle2 className="w-5 h-5 shrink-0" />
+          <div className={`mb-6 p-4 rounded-xl border text-sm font-semibold flex items-center gap-3 animate-in fade-in duration-300 ${
+            statusIsError 
+              ? 'bg-red-500/10 border-red-500/40 text-red-400' 
+              : 'bg-cyan-500/10 border-cyan-500/40 text-cyan-400'
+          }`}>
+            {statusIsError ? <AlertCircle className="w-5 h-5 shrink-0" /> : <CheckCircle2 className="w-5 h-5 shrink-0" />}
             <span>{statusMessage}</span>
           </div>
         )}
