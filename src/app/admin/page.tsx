@@ -39,8 +39,21 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       // 1. Fetch Store Config
-      const { data: configData } = await supabase.from('store_config').select('*').single();
-      if (configData) setConfig(configData);
+      const { data: configData } = await supabase.from('store_config').select('*');
+      if (configData && configData.length > 0) {
+        // Find main item or take first
+        const item = configData.find((c: any) => c.key === 'store_settings' || c.id === '1') || configData[0];
+        let parsedConfig: Partial<StoreConfig> = { ...item };
+        if (item.value && typeof item.value === 'string') {
+          try {
+            const parsed = JSON.parse(item.value);
+            parsedConfig = { ...parsedConfig, ...parsed };
+          } catch (e) {
+            // value is plain string
+          }
+        }
+        setConfig(prev => ({ ...prev, ...parsedConfig }));
+      }
 
       // 2. Fetch Payment Methods
       const { data: payData } = await supabase.from('payment_methods').select('*').order('created_at', { ascending: true });
@@ -70,9 +83,16 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const configId = config.id || '1';
+      const configValueJSON = JSON.stringify({
+        whatsapp_number: config.whatsapp_number,
+        store_address: config.store_address,
+        store_name: config.store_name || 'Borceguí',
+      });
+
       const { error } = await supabase.from('store_config').upsert({
         id: configId,
         key: 'store_settings',
+        value: configValueJSON,
         whatsapp_number: config.whatsapp_number,
         store_address: config.store_address,
         store_name: config.store_name || 'Borceguí',

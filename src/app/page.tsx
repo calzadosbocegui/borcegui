@@ -62,8 +62,8 @@ export default function Home() {
         {/* Floating Cart Modal / Drawer */}
         <CartDrawer whatsappNumber={config.whatsapp_number} />
 
-        {/* Hero Section */}
-        <HeroSection />
+        {/* Hero Section (dinámico con el primer producto destacado) */}
+        <HeroSection heroProduct={products[0]} />
 
         {/* History Section */}
         <HistorySection />

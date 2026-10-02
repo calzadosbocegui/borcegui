@@ -1,9 +1,18 @@
 "use client";
 
 import React from 'react';
+import { Product } from '@/types/database';
 import { ShieldCheck, Cpu, Zap, RotateCw, Sparkles, CheckCircle2 } from 'lucide-react';
 
-export const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  heroProduct?: Product | null;
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct }) => {
+  const heroImage = heroProduct?.images?.[0] || "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000";
+  const heroTitle = heroProduct?.name || "Borceguí Performance Dial";
+  const heroCode = heroProduct?.model_code || "EDICIÓN ESPECIAL";
+
   return (
     <section id="inicio" className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32 bg-zinc-950 text-white">
       {/* Glow Background Gradient Effects */}
@@ -69,8 +78,8 @@ export const HeroSection: React.FC = () => {
             <div className="relative mx-auto max-w-md rounded-3xl overflow-hidden border border-zinc-800 bg-gradient-to-b from-zinc-900 to-zinc-950 p-4 shadow-2xl group">
               <div className="aspect-[4/5] rounded-2xl overflow-hidden relative">
                 <img
-                  src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000"
-                  alt="Calzado Borceguí y Caja Oficial"
+                  src={heroImage}
+                  alt={heroTitle}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80" />
@@ -79,8 +88,8 @@ export const HeroSection: React.FC = () => {
                 <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-zinc-950/80 backdrop-blur-md border border-zinc-800/80 text-left">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-cyan-400 font-bold uppercase tracking-wider">Edición Especial</p>
-                      <h4 className="text-base font-extrabold text-white">Borceguí Performance Dial</h4>
+                      <p className="text-xs text-cyan-400 font-bold uppercase tracking-wider">{heroCode}</p>
+                      <h4 className="text-base font-extrabold text-white">{heroTitle}</h4>
                     </div>
                     <span className="px-2.5 py-1 bg-cyan-500 text-black text-xs font-black rounded-lg">
                       NEW
