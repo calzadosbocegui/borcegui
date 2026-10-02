@@ -25,6 +25,7 @@ export interface ProductSize {
 export interface Product {
   id: string;
   name: string;
+  model_code?: string;
   description: string;
   price: number;
   category: 'deportiva' | 'casual';

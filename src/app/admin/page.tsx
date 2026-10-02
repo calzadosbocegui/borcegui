@@ -92,9 +92,11 @@ export default function AdminDashboard() {
 
   // --- PRODUCT MANAGEMENT ---
   const handleOpenNewProduct = () => {
+    const timestampCode = Math.floor(1000 + Math.random() * 9000);
     setEditingProduct({
       id: `prod-${Date.now()}`,
       name: '',
+      model_code: `BORC-${timestampCode}`,
       description: '',
       price: 85.00,
       category: 'deportiva',
@@ -111,7 +113,10 @@ export default function AdminDashboard() {
   };
 
   const handleOpenEditProduct = (prod: Product) => {
-    setEditingProduct(prod);
+    setEditingProduct({
+      ...prod,
+      model_code: prod.model_code || `BORC-${prod.id.slice(0, 6).toUpperCase()}`,
+    });
     if (prod.product_sizes && prod.product_sizes.length > 0) {
       setEditingSizes(prod.product_sizes.map(s => ({ size: s.size, stock: s.stock })));
     } else {
@@ -122,13 +127,19 @@ export default function AdminDashboard() {
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProduct?.name || !editingProduct?.price) return;
+    if (!editingProduct?.name || !editingProduct?.price || !editingProduct?.model_code?.trim()) {
+      showNotification('Por favor completa los campos obligatorios: Nombre, Código de Modelo y Precio.', true);
+      return;
+    }
 
     setLoading(true);
     const prodId = editingProduct.id || `prod-${Date.now()}`;
+    const modelCode = editingProduct.model_code.trim().toUpperCase();
+
     const newProd: Product = {
       id: prodId,
       name: editingProduct.name,
+      model_code: modelCode,
       description: editingProduct.description || '',
       price: Number(editingProduct.price),
       category: (editingProduct.category as 'deportiva' | 'casual') || 'deportiva',
@@ -137,11 +148,12 @@ export default function AdminDashboard() {
       product_sizes: editingSizes.map((s, idx) => ({ id: `size-${idx}`, product_id: prodId, size: s.size, stock: Number(s.stock) }))
     };
 
-    // Attempt Supabase Upsert
+    // Attempt Supabase Upsert with model_code payload
     try {
       const { error: prodError } = await supabase.from('products').upsert({
         id: newProd.id,
         name: newProd.name,
+        model_code: newProd.model_code,
         description: newProd.description,
         price: newProd.price,
         category: newProd.category,
@@ -552,9 +564,11 @@ export default function AdminDashboard() {
             </div>
 
             <form onSubmit={handleSaveProduct} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-300">Nombre del Modelo</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="sm:col-span-2 space-y-1.5">
+                  <label className="text-xs font-bold text-zinc-300">
+                    Nombre del Modelo <span className="text-red-400">*</span>
+                  </label>
                   <input
                     type="text"
                     required
@@ -566,6 +580,22 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-zinc-300">
+                    Código de Modelo <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editingProduct.model_code || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, model_code: e.target.value })}
+                    placeholder="Ej. BORC-1001"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono text-xs uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-300">Categoría</label>
                   <select
                     value={editingProduct.category || 'deportiva'}
@@ -576,11 +606,9 @@ export default function AdminDashboard() {
                     <option value="casual">Línea Casual</option>
                   </select>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-300">Precio ($ USD)</label>
+                  <label className="text-xs font-bold text-zinc-300">Precio ($ USD) <span className="text-red-400">*</span></label>
                   <input
                     type="number"
                     step="0.01"
@@ -590,6 +618,7 @@ export default function AdminDashboard() {
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono"
                   />
                 </div>
+              </div>
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-zinc-300">Fotografías del Calzado</label>
@@ -627,7 +656,6 @@ export default function AdminDashboard() {
                     </label>
                   </div>
                 </div>
-              </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-300">Descripción del Producto</label>
