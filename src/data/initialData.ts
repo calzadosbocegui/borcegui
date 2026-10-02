@@ -17,48 +17,47 @@ export const INITIAL_PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
-  // 6 modelos Línea Deportiva
+  // 6 modelos Línea Deportiva (Tonos uniformes y frescos para dinamismo, juventud y seguridad)
   {
     id: 'dep-1',
     name: 'Borceguí Apex Runner Dial',
-    description: 'Diseño deportivo aerodinámico ultraligero con suela de amortiguación responsiva y sistema Dial Pro.',
+    description: 'Diseño deportivo aerodinámico ultraligero con suela de amortiguación responsiva, tonos uniformes y frescos para dinamismo, juventud y seguridad.',
     price: 85.00,
     category: 'deportiva',
     images: [
       'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800',
       'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=800'
     ],
-    features: ['Dial Pro 1-click', 'Guayas de acero inoxidables', 'Transpirable Mesh 3D'],
+    features: ['Dial Micrométrico Pro', 'Guayas de acero', 'Transpirable Mesh 3D'],
     product_sizes: [
-      { id: 's1', product_id: 'dep-1', size: 39, stock: 5 },
-      { id: 's2', product_id: 'dep-1', size: 40, stock: 8 },
-      { id: 's3', product_id: 'dep-1', size: 41, stock: 12 },
-      { id: 's4', product_id: 'dep-1', size: 42, stock: 6 },
-      { id: 's5', product_id: 'dep-1', size: 43, stock: 3 },
+      { id: 's1', product_id: 'dep-1', size: 36, stock: 6 },
+      { id: 's2', product_id: 'dep-1', size: 37, stock: 8 },
+      { id: 's3', product_id: 'dep-1', size: 38, stock: 10 },
+      { id: 's4', product_id: 'dep-1', size: 39, stock: 12 },
+      { id: 's5', product_id: 'dep-1', size: 40, stock: 5 },
     ]
   },
   {
     id: 'dep-2',
-    name: 'Borceguí Stealth Carbon Sport',
-    description: 'Acabados en negro mate con acentos turquesa corporativos y refuerzo lateral de estabilidad.',
+    name: 'Borceguí Stealth Sport Dial',
+    description: 'Tonos frescos con acentos cian corporativos y tecnología Dial giratorio para mayor seguridad y velocidad.',
     price: 90.00,
     category: 'deportiva',
     images: [
-      'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800',
-      'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=800'
+      'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800'
     ],
-    features: ['Suela Anti-derrapante', 'Sistema Dial Integrado', 'Capellada Sintética Premium'],
+    features: ['Suela Anti-derrapante', 'Sistema Dial Integrado', 'Ergonomía Deportiva'],
     product_sizes: [
-      { id: 's6', product_id: 'dep-2', size: 40, stock: 4 },
-      { id: 's7', product_id: 'dep-2', size: 41, stock: 10 },
-      { id: 's8', product_id: 'dep-2', size: 42, stock: 7 },
-      { id: 's9', product_id: 'dep-2', size: 43, stock: 2 },
+      { id: 's6', product_id: 'dep-2', size: 35, stock: 4 },
+      { id: 's7', product_id: 'dep-2', size: 36, stock: 8 },
+      { id: 's8', product_id: 'dep-2', size: 37, stock: 10 },
+      { id: 's9', product_id: 'dep-2', size: 38, stock: 6 },
     ]
   },
   {
     id: 'dep-3',
     name: 'Borceguí Velocity Cyan Edition',
-    description: 'Edición limitada con acento turquesa intenso en el rotor de la perilla y amortiguador en talón.',
+    description: 'Edición juvenil con acento turquesa intenso en el rotor del dial y amortiguador responsivo.',
     price: 95.00,
     category: 'deportiva',
     images: [
@@ -66,15 +65,15 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     features: ['Rotor Turquesa Exclusivo', 'Plantilla Memoria de Impacto', 'Ajuste Anatómico'],
     product_sizes: [
-      { id: 's10', product_id: 'dep-3', size: 39, stock: 6 },
-      { id: 's11', product_id: 'dep-3', size: 41, stock: 5 },
-      { id: 's12', product_id: 'dep-3', size: 42, stock: 9 },
+      { id: 's10', product_id: 'dep-3', size: 36, stock: 6 },
+      { id: 's11', product_id: 'dep-3', size: 37, stock: 5 },
+      { id: 's12', product_id: 'dep-3', size: 38, stock: 9 },
     ]
   },
   {
     id: 'dep-4',
-    name: 'Borceguí CrossFit Power Dial',
-    description: 'Diseñado para entrenamiento de alta intensidad, levantamiento y soporte seguro al tobillo.',
+    name: 'Borceguí Power Fit Dial',
+    description: 'Diseñado para entrenamiento dinámico con tonos dinámicos y soporte integral al tobillo.',
     price: 88.00,
     category: 'deportiva',
     images: [
@@ -82,81 +81,83 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     features: ['Soporte de Tobillo Reforzado', 'Suela de Goma vulcanizada'],
     product_sizes: [
-      { id: 's13', product_id: 'dep-4', size: 40, stock: 6 },
-      { id: 's14', product_id: 'dep-4', size: 41, stock: 8 },
-      { id: 's15', product_id: 'dep-4', size: 42, stock: 4 },
-      { id: 's16', product_id: 'dep-4', size: 43, stock: 5 },
+      { id: 's13', product_id: 'dep-4', size: 36, stock: 6 },
+      { id: 's14', product_id: 'dep-4', size: 37, stock: 8 },
+      { id: 's15', product_id: 'dep-4', size: 38, stock: 4 },
+      { id: 's16', product_id: 'dep-4', size: 39, stock: 5 },
     ]
   },
   {
     id: 'dep-5',
     name: 'Borceguí Turbo Boost Light',
-    description: 'Chasis de peso mínimo con microperforaciones láser para máxima frescura en carreras largas.',
+    description: 'Chasis de peso mínimo en tonos frescos con microperforaciones láser para máxima ventilación.',
     price: 82.00,
     category: 'deportiva',
     images: [
       'https://images.unsplash.com/photo-1539185441755-769473a23570?w=800'
     ],
-    features: ['Microperforación Láser AirFlow', 'Dial Compacto Fit'],
+    features: ['Microperforación AirFlow', 'Dial Compacto Fit'],
     product_sizes: [
-      { id: 's17', product_id: 'dep-5', size: 38, stock: 3 },
-      { id: 's18', product_id: 'dep-5', size: 39, stock: 7 },
-      { id: 's19', product_id: 'dep-5', size: 40, stock: 10 },
-      { id: 's20', product_id: 'dep-5', size: 41, stock: 6 },
+      { id: 's17', product_id: 'dep-5', size: 34, stock: 3 },
+      { id: 's18', product_id: 'dep-5', size: 35, stock: 7 },
+      { id: 's19', product_id: 'dep-5', size: 36, stock: 10 },
+      { id: 's20', product_id: 'dep-5', size: 37, stock: 6 },
     ]
   },
   {
     id: 'dep-6',
-    name: 'Borceguí All-Terrain Trek Dial',
-    description: 'Calzado híbrido deportivo-trekking para terreno irregular con tracción multidireccional.',
+    name: 'Borceguí Trek Dynamic Dial',
+    description: 'Calzado híbrido en tonos uniformes de alta visibilidad para tracción multidireccional y seguridad.',
     price: 98.00,
     category: 'deportiva',
     images: [
       'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800'
     ],
-    features: ['Suela Multidireccional All-Grip', 'Construcción Repelente al Agua'],
+    features: ['Suela Multidireccional', 'Construcción Repelente'],
     product_sizes: [
-      { id: 's21', product_id: 'dep-6', size: 40, stock: 5 },
-      { id: 's22', product_id: 'dep-6', size: 41, stock: 7 },
-      { id: 's23', product_id: 'dep-6', size: 42, stock: 9 },
-      { id: 's24', product_id: 'dep-6', size: 43, stock: 4 },
+      { id: 's21', product_id: 'dep-6', size: 36, stock: 5 },
+      { id: 's22', product_id: 'dep-6', size: 37, stock: 7 },
+      { id: 's23', product_id: 'dep-6', size: 38, stock: 9 },
+      { id: 's24', product_id: 'dep-6', size: 39, stock: 4 },
     ]
   },
 
-  // 2 modelos Línea Casual
+  // 2 modelos Línea Casual (En imponente y elegante color negro para firmeza, determinación e innovación, Tallas 24-40)
   {
     id: 'cas-1',
-    name: 'Borceguí Urban Executive Dial',
-    description: 'Elegancia sofisticada para oficina y eventos informales con cuero sintético mate y cierre giratorio discreto.',
+    name: 'Borceguí Executive Black Dial',
+    description: 'Imponente y elegante color negro para firmeza, determinación e innovación con cierre dial micrométrico (Rango de tallas 24 a 40).',
     price: 92.00,
     category: 'casual',
     images: [
       'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=800',
       'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800'
     ],
-    features: ['Estilo Ejecutivo Urbano', 'Cierre Dial Oculto Pro', 'Plantilla Ergonómica Confort'],
+    features: ['Elegante Color Negro Imponente', 'Cierre Dial Micrométrico', 'Plantilla Ergonómica Premium'],
     product_sizes: [
-      { id: 's25', product_id: 'cas-1', size: 40, stock: 6 },
-      { id: 's26', product_id: 'cas-1', size: 41, stock: 11 },
-      { id: 's27', product_id: 'cas-1', size: 42, stock: 8 },
-      { id: 's28', product_id: 'cas-1', size: 43, stock: 5 },
+      { id: 'cs1', product_id: 'cas-1', size: 24, stock: 5 },
+      { id: 'cs2', product_id: 'cas-1', size: 28, stock: 8 },
+      { id: 'cs3', product_id: 'cas-1', size: 32, stock: 10 },
+      { id: 'cs4', product_id: 'cas-1', size: 36, stock: 12 },
+      { id: 'cs5', product_id: 'cas-1', size: 40, stock: 6 },
     ]
   },
   {
     id: 'cas-2',
-    name: 'Borceguí Minimalist Street Casual',
-    description: 'Estilo callejero vanguardista en monocromo oscuro con sistema de ajuste rápido y suela plana amortiguada.',
+    name: 'Borceguí Minimalist Stealth Black',
+    description: 'Estilo vanguardista monocromático en imponente color negro absoluto. Firmeza, confort y tecnología de ajuste sin cordones (Rango 24-40).',
     price: 88.00,
     category: 'casual',
     images: [
       'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=800'
     ],
-    features: ['Perfil Bajo Streetwear', 'Ajuste Instantáneo sin Lazos'],
+    features: ['Negro Absoluto Vanguardista', 'Sistema de Ajuste Rápido sin Cordones', 'Suela Amortiguada'],
     product_sizes: [
-      { id: 's29', product_id: 'cas-2', size: 39, stock: 4 },
-      { id: 's30', product_id: 'cas-2', size: 40, stock: 8 },
-      { id: 's31', product_id: 'cas-2', size: 41, stock: 9 },
-      { id: 's32', product_id: 'cas-2', size: 42, stock: 7 },
+      { id: 'cs6', product_id: 'cas-2', size: 24, stock: 4 },
+      { id: 'cs7', product_id: 'cas-2', size: 28, stock: 6 },
+      { id: 'cs8', product_id: 'cas-2', size: 34, stock: 8 },
+      { id: 'cs9', product_id: 'cas-2', size: 38, stock: 10 },
+      { id: 'cs10', product_id: 'cas-2', size: 40, stock: 7 },
     ]
   }
 ];

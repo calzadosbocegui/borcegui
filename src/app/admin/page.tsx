@@ -538,14 +538,40 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-zinc-300">URL Imagen (1000x1000px rec.)</label>
-                  <input
-                    type="text"
-                    value={editingProduct.images?.[0] || ''}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, images: [e.target.value] })}
-                    placeholder="https://..."
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-cyan-500 text-xs"
-                  />
+                  <label className="text-xs font-bold text-zinc-300">Fotografías del Calzado</label>
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="text"
+                      value={editingProduct.images?.[0] || ''}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, images: [e.target.value] })}
+                      placeholder="URL o sube desde tu dispositivo..."
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                    />
+                    <label className="cursor-pointer px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-cyan-400 text-xs font-bold rounded-xl border border-zinc-700 whitespace-nowrap">
+                      Subir Foto
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (uploadEvent) => {
+                              const result = uploadEvent.target?.result as string;
+                              if (result) {
+                                setEditingProduct({
+                                  ...editingProduct,
+                                  images: [result, ...(editingProduct.images?.slice(1) || [])],
+                                });
+                              }
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -559,17 +585,37 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* Tallas & Stock Management */}
+              {/* Tallas & Stock Management (Supports 24-40) */}
               <div className="space-y-2 pt-2 border-t border-zinc-800">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-extrabold text-cyan-400">Tallas y Stock Disponible</label>
-                  <button
-                    type="button"
-                    onClick={() => setEditingSizes([...editingSizes, { size: 40, stock: 5 }])}
-                    className="text-xs text-cyan-400 font-bold hover:underline"
-                  >
-                    + Añadir Talla
-                  </button>
+                  <div>
+                    <label className="text-xs font-extrabold text-cyan-400 block">Tallas y Stock Disponibles</label>
+                    <span className="text-[10px] text-zinc-500">
+                      Rango recomendado para Línea Casual: Tallas 24 a 40
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditingSizes([
+                        { size: 24, stock: 5 },
+                        { size: 28, stock: 8 },
+                        { size: 32, stock: 10 },
+                        { size: 36, stock: 10 },
+                        { size: 40, stock: 5 },
+                      ])}
+                      className="text-[11px] px-2.5 py-1 bg-zinc-900 border border-zinc-800 hover:border-cyan-500/50 text-cyan-400 font-bold rounded-lg"
+                    >
+                      Preset Casual (24-40)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingSizes([...editingSizes, { size: 38, stock: 5 }])}
+                      className="text-xs text-cyan-400 font-bold hover:underline"
+                    >
+                      + Añadir Talla
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-2 max-h-40 overflow-y-auto p-1">

@@ -31,65 +31,65 @@ export const TechSection: React.FC = () => {
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          {/* Step 1 */}
+          {/* Feature 1 */}
           <div className="bg-zinc-900/60 border border-zinc-800 rounded-3xl p-8 space-y-5 hover:border-cyan-500/40 transition-all duration-300 relative group">
             <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-black transition-all">
               <RotateCw className="w-7 h-7" />
             </div>
-            <h3 className="text-xl font-black text-white">1. Presiona & Gira</h3>
+            <h3 className="text-xl font-black text-white">Ajuste Dial Micrométrico (Sin Cordones)</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              Empuja la perilla del dial para enganchar el mecanismo y gírala en sentido horario para ajustar la tensión milímetro a milímetro.
+              Sistema de cierre giratorio micrométrico de respuesta instantánea. Olvídate de atar cordones o sufrir presiones desproporcionadas en el empeine.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 font-medium pt-2">
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
-                Ajuste óptimo en 1 segundo
+                Ajuste perfecto en 1 segundo
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
-                Sin puntos de presión dolorosos
+                Presión uniforme y confortable
               </li>
             </ul>
           </div>
 
-          {/* Step 2 */}
+          {/* Feature 2 */}
           <div className="bg-zinc-900/60 border border-zinc-800 rounded-3xl p-8 space-y-5 hover:border-cyan-500/40 transition-all duration-300 relative group">
             <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-black transition-all">
               <Shield className="w-7 h-7" />
             </div>
-            <h3 className="text-xl font-black text-white">2. Guayas de Acero Blindado</h3>
+            <h3 className="text-xl font-black text-white">Más Seguridad & Máximo Confort</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              En lugar de tela o fibras convencionales, el sistema utiliza micro-cables de acero revestidos en polímero anti-fricción de grado militar.
+              Guayas de acero ultra-resistentes recubiertas y suelas absorbentes de impacto para brindar estabilidad y dinamismo en cada paso.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 font-medium pt-2">
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
-                Resistencia a tracción extrema
+                Cero desenganche accidental
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
-                No absorbe agua ni acumula mugre
+                Ergonomía de alto rendimiento
               </li>
             </ul>
           </div>
 
-          {/* Step 3 */}
+          {/* Feature 3 */}
           <div className="bg-zinc-900/60 border border-zinc-800 rounded-3xl p-8 space-y-5 hover:border-cyan-500/40 transition-all duration-300 relative group">
             <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-black transition-all">
               <Zap className="w-7 h-7" />
             </div>
-            <h3 className="text-xl font-black text-white">3. Liberación Instantánea</h3>
+            <h3 className="text-xl font-black text-white">Diseño Innovador & Vanguardista</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              Al finalizar tu rutina o jornada laboral, simplemente jala el dial hacia arriba para soltar toda la tensión de inmediato y quitar el calzado sin esfuerzo.
+              Tecnología de última generación que combina estética moderna, siluetas futuristas y materiales duraderos listos para cualquier reto.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 font-medium pt-2">
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
-                Apertura completa en un clic
+                Liberación rápida en 1 clic
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
-                Máxima durabilidad comprobada
+                Estilo urbano e imponente
               </li>
             </ul>
           </div>

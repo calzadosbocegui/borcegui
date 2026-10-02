@@ -33,7 +33,7 @@ export const HistorySection: React.FC = () => {
                 Del Calzado Medieval a la Revolución Dial
               </h3>
               <p className="text-zinc-300 text-sm leading-relaxed">
-                El <strong>borceguí</strong> (originario del árabe hispánico <em>busrayīn</em> y popularizado en la España medieval) era un tipo de calzado fuerte, resistente que envolvía el pie y la pierna con firmeza. Diseñado para ofrecer protección en travesías exigentes y movilidad sin igual.
+                En la Edad Media, los <strong>borceguíes</strong> eran reconocidos como el calzado de cuero más firme, seguro y resistente, concebido para brindar máxima protección en cada batalla. Hoy, en <strong>Borceguí</strong>, recuperamos esa herencia de fortaleza y confianza para adaptarla a las exigencias del estilo de vida contemporáneo.
               </p>
               <p className="text-zinc-400 text-sm leading-relaxed">
                 En <strong>Borceguí 2026</strong>, tomamos ese legado histórico de protección y resistencia y lo fusionamos con nuestro <strong>Pilar Tecnológico de Dial Giratorio</strong>: resistencia indestructible sin perder elegancia.

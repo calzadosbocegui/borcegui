@@ -35,8 +35,8 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ products, loadin
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
               COLECCIONES EXCLUSIVAS
             </h2>
-            <p className="text-zinc-400 text-sm max-w-xl">
-              Selecciona entre nuestra Línea Deportiva (6 modelos) y Línea Casual (2 modelos) con dial de cierre rápido.
+            <p className="text-zinc-400 text-sm max-w-2xl">
+              Explora nuestra <strong>Línea Deportiva</strong> (6 modelos en tonos uniformes y frescos para dinamismo, juventud y seguridad) y nuestra <strong>Línea Casual</strong> (2 modelos en imponente y elegante color negro para firmeza, determinación e innovación; Rango de tallas 24 a 40).
             </p>
           </div>
 
