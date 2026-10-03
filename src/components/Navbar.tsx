@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Menu, X, RotateCw, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, Menu, X, MapPin } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 export const Navbar: React.FC = () => {
   const { totalItems, setIsCartOpen } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const MAPS_URL = "https://goo.gl/maps/aQJurk1Nd2ewkjdw9?g_st=ac";
 
   return (
     <header className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 text-white">
@@ -52,8 +53,21 @@ export const Navbar: React.FC = () => {
           </Link>
         </nav>
 
-        {/* Cart & Instagram Actions */}
-        <div className="flex items-center gap-3">
+        {/* Header Actions: Maps, Instagram & Cart */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Google Maps Button */}
+          <a
+            href={MAPS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 hover:text-cyan-200 transition-all text-xs font-bold shadow-lg shadow-cyan-500/10 group"
+            title="Ubicación en Google Maps"
+          >
+            <MapPin className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform shrink-0" />
+            <span className="hidden lg:inline uppercase font-mono tracking-wider text-[11px]">Ubicación</span>
+          </a>
+
+          {/* Instagram Button */}
           <a
             href="https://instagram.com/borcegui2026"
             target="_blank"
@@ -129,6 +143,16 @@ export const Navbar: React.FC = () => {
           >
             Ubicación & Pagos
           </Link>
+          <a
+            href={MAPS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 text-cyan-400 font-bold py-2"
+          >
+            <MapPin className="w-4 h-4 shrink-0" />
+            <span>Abrir en Google Maps ↗</span>
+          </a>
           <Link
             href="/admin"
             onClick={() => setMobileMenuOpen(false)}

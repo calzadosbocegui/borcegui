@@ -58,7 +58,7 @@ export const StoreInfoSection: React.FC<StoreInfoSectionProps> = ({ config, paym
                 Ven a probarte tus modelos Borceguí favoritos directamente en nuestro showroom oficial:
               </p>
 
-              <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800/80 space-y-2">
+              <div className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800/80 space-y-3">
                 <p className="text-sm font-bold text-white flex items-start gap-2">
                   <MapPin className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
                   <span>{defaultAddress}</span>
@@ -66,6 +66,16 @@ export const StoreInfoSection: React.FC<StoreInfoSectionProps> = ({ config, paym
                 <p className="text-xs text-zinc-400 pl-7">
                   Horario de Atención: Lunes a Sábado de 9:00 AM a 6:00 PM
                 </p>
+
+                <a
+                  href="https://goo.gl/maps/aQJurk1Nd2ewkjdw9?g_st=ac"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-xs uppercase tracking-wider transition-all shadow-md shadow-cyan-500/10 group mt-2"
+                >
+                  <MapPin className="w-4 h-4 fill-black text-cyan-400 group-hover:scale-110 transition-transform" />
+                  <span>Abrir en Google Maps GPS ↗</span>
+                </a>
               </div>
             </div>
 
