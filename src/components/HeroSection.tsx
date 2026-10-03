@@ -27,12 +27,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct, config })
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
-  // Auto rotation timer every 2.5 seconds
+  // Auto rotation timer every 4.0 seconds (4000ms)
   useEffect(() => {
     if (slides.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentSlideIndex((prev) => (prev + 1) % slides.length);
-    }, 2500);
+    }, 4000);
     return () => clearInterval(interval);
   }, [slides.length]);
 
@@ -40,7 +40,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct, config })
   const mainTitle = activeSlide?.title || config?.hero_title || "INNOVACIÓN TOTAL EN TU PASO.";
   const subTitle = activeSlide?.subtitle || config?.hero_subtitle || "FÁCIL DE PONER, FÁCIL DE AJUSTAR.";
   const ctaText = config?.hero_cta_text || "Explorar Catálogo 2026";
-  const badgeText = activeSlide?.badge_text || "EDICIÓN ESPECIAL 2026";
 
   return (
     <section id="inicio" className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32 bg-zinc-950 text-white">
@@ -51,9 +50,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct, config })
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Left Column: Copy & Identity (Sin etiqueta superior de coleccion oficial) */}
+          {/* Left Column: Copy & Identity */}
           <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight transition-all duration-700">
               {mainTitle} <br />
               <span className="bg-gradient-to-r from-cyan-400 via-cyan-200 to-white bg-clip-text text-transparent uppercase">
                 {subTitle}
@@ -97,28 +96,37 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct, config })
             </div>
           </div>
 
-          {/* Right Column: Hero Visual Showcase (Rotativo / Clic redirecciona) */}
+          {/* Right Column: E-commerce Banner Pro with Opacity Cross-Fade & Fixed Height */}
           <div className="lg:col-span-5 relative">
             <a 
               href="#catalogo"
-              className="block relative mx-auto max-w-md rounded-3xl overflow-hidden border border-zinc-800 bg-gradient-to-b from-zinc-900 to-zinc-950 p-4 shadow-2xl group cursor-pointer"
+              className="block relative mx-auto w-full rounded-3xl overflow-hidden border border-zinc-800/80 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-2xl group cursor-pointer"
             >
-              <div className="aspect-[4/5] rounded-2xl overflow-hidden relative">
-                <img
-                  src={activeSlide?.image_url}
-                  alt={mainTitle}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80" />
+              <div className="h-[320px] sm:h-[400px] w-full rounded-2xl overflow-hidden relative bg-zinc-900">
+                {slides.map((slide, idx) => (
+                  <div
+                    key={slide.id || idx}
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                      idx === currentSlideIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                    }`}
+                  >
+                    <img
+                      src={slide.image_url}
+                      alt={slide.title || mainTitle}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-70" />
+                  </div>
+                ))}
 
-                {/* Overlaid Badge Info */}
-                <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-zinc-950/80 backdrop-blur-md border border-zinc-800/80 text-left">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-cyan-400 font-bold uppercase tracking-wider">{badgeText}</p>
+                {/* Overlaid Clean Title Bar without fixed badge text */}
+                <div className="absolute bottom-4 left-4 right-4 z-20 p-4 rounded-xl bg-zinc-950/80 backdrop-blur-md border border-zinc-800/80 text-left">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="overflow-hidden">
                       <h4 className="text-sm font-extrabold text-white line-clamp-1">{mainTitle}</h4>
+                      <p className="text-xs text-cyan-400 font-medium line-clamp-1">{subTitle}</p>
                     </div>
-                    <span className="px-2.5 py-1 bg-cyan-500 text-black text-xs font-black rounded-lg shrink-0">
+                    <span className="px-3 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-black text-xs font-black rounded-xl shrink-0 transition-colors shadow-md">
                       VER ➔
                     </span>
                   </div>
@@ -126,7 +134,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct, config })
 
                 {/* Dots indicator for Slider */}
                 {slides.length > 1 && (
-                  <div className="absolute top-4 right-4 flex gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-zinc-800">
+                  <div className="absolute top-4 right-4 z-20 flex gap-1.5 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-zinc-800">
                     {slides.map((_, idx) => (
                       <span
                         key={idx}
@@ -134,8 +142,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ heroProduct, config })
                           e.preventDefault();
                           setCurrentSlideIndex(idx);
                         }}
-                        className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
-                          idx === currentSlideIndex ? 'bg-cyan-400 w-5' : 'bg-zinc-600'
+                        className={`w-2 h-2 rounded-full transition-all duration-500 cursor-pointer ${
+                          idx === currentSlideIndex ? 'bg-cyan-400 w-5' : 'bg-zinc-600 hover:bg-zinc-400'
                         }`}
                       />
                     ))}
