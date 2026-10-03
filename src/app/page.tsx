@@ -94,6 +94,20 @@ export default function Home() {
         {/* Navigation Bar */}
         <Navbar />
 
+        {/* Video Banner Promocional Superior */}
+        <div className="w-full relative overflow-hidden bg-black border-b border-zinc-800">
+          <video
+            src="/banner.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="w-full h-[280px] sm:h-[420px] object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-black/30 pointer-events-none" />
+        </div>
+
         {/* Floating Cart Modal / Drawer */}
         <CartDrawer whatsappNumber={config.whatsapp_number} />
 

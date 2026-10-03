@@ -206,8 +206,9 @@ export default function AdminDashboard() {
     }
 
     setLoading(true);
-    const isEditing = !!(editingProduct.id && !editingProduct.id.startsWith('prod-'));
-    const modelCode = editingProduct.model_code.trim().toUpperCase();
+    const prodIdStr = String(editingProduct.id || '');
+    const isEditing = !!(editingProduct.id && !prodIdStr.startsWith('prod-'));
+    const modelCode = String(editingProduct.model_code || '').trim().toUpperCase();
 
     try {
       let savedId: string;
