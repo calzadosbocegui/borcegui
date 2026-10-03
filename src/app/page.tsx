@@ -21,6 +21,20 @@ export default function Home() {
   const [config, setConfig] = useState<StoreConfig>(INITIAL_STORE_CONFIG);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(INITIAL_PAYMENT_METHODS);
   const [loading, setLoading] = useState(true);
+  const [highlightSlug, setHighlightSlug] = useState<string | null>(null);
+
+  // Read ?calzado= URL param and store it for CatalogSection auto-scroll
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('calzado');
+    if (slug) {
+      setHighlightSlug(slug);
+      // Scroll smoothly to catalog section
+      setTimeout(() => {
+        document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
+      }, 800);
+    }
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -90,7 +104,7 @@ export default function Home() {
         <HistorySection />
 
         {/* Interactive Products Catalog (6 Sporty + 2 Casual) */}
-        <CatalogSection products={products} loading={loading} />
+        <CatalogSection products={products} loading={loading} highlightSlug={highlightSlug} />
 
         {/* Technological Pillar - Dial System */}
         <TechSection />

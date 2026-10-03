@@ -181,8 +181,27 @@ export default function AdminDashboard() {
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProduct?.name || !editingProduct?.price || !editingProduct?.model_code?.trim()) {
-      showNotification('Por favor completa los campos obligatorios: Nombre, Código de Modelo y Precio.', true);
+
+    // Validación explícita con mensajes claros
+    if (!editingProduct?.name?.trim()) {
+      showNotification('⚠️ El campo "Nombre del Modelo" es obligatorio.', true);
+      return;
+    }
+    if (!editingProduct?.model_code?.trim()) {
+      showNotification('⚠️ El campo "Código de Modelo" (ej. BORC-1001) es obligatorio.', true);
+      return;
+    }
+    if (!editingProduct?.price || Number(editingProduct.price) <= 0) {
+      showNotification('⚠️ El campo "Precio" debe ser mayor a 0.', true);
+      return;
+    }
+    if (editingSizes.length === 0) {
+      showNotification('⚠️ Agrega al menos una talla con su stock antes de guardar.', true);
+      return;
+    }
+    const invalidSize = editingSizes.find(s => !s.size || Number(s.stock) < 0);
+    if (invalidSize) {
+      showNotification('⚠️ Revisa las tallas: hay un campo vacío o con stock inválido.', true);
       return;
     }
 
@@ -1084,9 +1103,24 @@ export default function AdminDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs rounded-xl shadow-lg shadow-cyan-500/20"
+                  disabled={loading}
+                  className={`w-1/2 py-3 font-extrabold text-xs rounded-xl shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all ${
+                    loading
+                      ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
+                      : 'bg-cyan-500 hover:bg-cyan-400 text-black'
+                  }`}
                 >
-                  Guardar en Base de Datos
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Guardando...
+                    </>
+                  ) : (
+                    'Guardar en Base de Datos'
+                  )}
                 </button>
               </div>
             </form>

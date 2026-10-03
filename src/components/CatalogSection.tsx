@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Product } from '@/types/database';
 import { ProductCard } from '@/components/ProductCard';
 import { Filter, Flame, Compass } from 'lucide-react';
@@ -8,10 +8,13 @@ import { Filter, Flame, Compass } from 'lucide-react';
 interface CatalogSectionProps {
   products: Product[];
   loading?: boolean;
+  /** slug/code del calzado a destacar automáticamente (leído desde ?calzado=) */
+  highlightSlug?: string | null;
 }
 
-export const CatalogSection: React.FC<CatalogSectionProps> = ({ products, loading = false }) => {
+export const CatalogSection: React.FC<CatalogSectionProps> = ({ products, loading = false, highlightSlug }) => {
   const [activeCategory, setActiveCategory] = useState<'todos' | 'deportiva' | 'casual'>('todos');
+  const highlightRef = useRef<HTMLDivElement>(null);
 
   const filteredProducts = products.filter((p) => {
     if (activeCategory === 'todos') return true;
@@ -20,6 +23,39 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ products, loadin
 
   const deportivaCount = products.filter((p) => p.category === 'deportiva').length;
   const casualCount = products.filter((p) => p.category === 'casual').length;
+
+  // Auto-scroll & highlight when slug param is detected
+  useEffect(() => {
+    if (!highlightSlug || products.length === 0) return;
+
+    // Find matching product by slug (model_code lowercased/normalized) or id
+    const match = products.find((p) => {
+      const codeSlug = p.model_code
+        ? p.model_code.toLowerCase().replace(/[^a-z0-9]/g, '-')
+        : null;
+      return codeSlug === highlightSlug || p.id === highlightSlug;
+    });
+
+    if (!match) return;
+
+    // Switch filter to show it if needed
+    setActiveCategory('todos');
+
+    // Delay to ensure render, then scroll
+    const timer = setTimeout(() => {
+      const el = document.getElementById(`product-card-${match.id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Flash highlight ring
+        el.classList.add('ring-4', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-zinc-950');
+        setTimeout(() => {
+          el.classList.remove('ring-4', 'ring-cyan-400', 'ring-offset-4', 'ring-offset-zinc-950');
+        }, 3500);
+      }
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [highlightSlug, products]);
 
   return (
     <section id="catalogo" className="py-24 bg-zinc-950 text-white relative">
@@ -91,7 +127,13 @@ export const CatalogSection: React.FC<CatalogSectionProps> = ({ products, loadin
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div
+                key={product.id}
+                id={`product-card-${product.id}`}
+                className="rounded-2xl transition-all duration-700"
+              >
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         )}

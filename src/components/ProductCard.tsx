@@ -74,14 +74,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               )}
             </div>
 
-            {/* Quick Share via WhatsApp button */}
+            {/* Quick Share via WhatsApp button — enlace directo al producto */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                const shareText = encodeURIComponent(`¡Mira este calzado Borceguí! 👟\n*${product.name}*\nRef: ${product.model_code || 'BORCEGUI'}\nPrecio: $${product.price.toFixed(2)}\n\nVer en tienda: ${window.location.origin}`);
+                const slug = product.model_code
+                  ? product.model_code.toLowerCase().replace(/[^a-z0-9]/g, '-')
+                  : product.id;
+                const productUrl = `${window.location.origin}/?calzado=${slug}`;
+                const shareText = encodeURIComponent(
+                  `¡Mira este calzado Borceguí! 👟\n*${product.name}*\nRef: ${product.model_code || 'BORCEGUI'}\nPrecio: $${product.price.toFixed(2)}\n\n📎 Ver directamente: ${productUrl}`
+                );
                 window.open(`https://wa.me/?text=${shareText}`, '_blank');
               }}
-              title="Compartir por WhatsApp"
+              title="Compartir enlace directo por WhatsApp"
               className="p-1.5 rounded-full bg-emerald-500/90 text-black hover:bg-emerald-400 shadow-md transition-all active:scale-95"
             >
               <Share2 className="w-3.5 h-3.5 stroke-[2.5]" />
