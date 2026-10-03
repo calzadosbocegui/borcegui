@@ -1,22 +1,42 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { Product, StoreConfig, PaymentMethod, ProductSize } from '@/types/database';
+import { Product, StoreConfig, PaymentMethod, ProductSize, HeroSlide } from '@/types/database';
 import { INITIAL_PRODUCTS, INITIAL_STORE_CONFIG, INITIAL_PAYMENT_METHODS } from '@/data/initialData';
 import { 
   Plus, Edit, Trash2, Save, RefreshCw, PhoneCall, MapPin, 
-  CreditCard, Package, ArrowLeft, CheckCircle2, AlertCircle, Sparkles, X 
+  CreditCard, Package, ArrowLeft, CheckCircle2, AlertCircle, Sparkles, X, Lock, LogIn, Image as ImageIcon
 } from 'lucide-react';
 
 export default function AdminDashboard() {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginUsername, setLoginUsername] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<'products' | 'config' | 'payments'>('products');
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [config, setConfig] = useState<StoreConfig>(INITIAL_STORE_CONFIG);
   const [payments, setPayments] = useState<PaymentMethod[]>(INITIAL_PAYMENT_METHODS);
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  // New slide entry state
+  const [newSlideTitle, setNewSlideTitle] = useState('');
+  const [newSlideSubtitle, setNewSlideSubtitle] = useState('');
+  const [newSlideBadge, setNewSlideBadge] = useState('EDICIÓN ESPECIAL');
+  const [newSlideImage, setNewSlideImage] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if ((loginUsername === 'admin' || loginUsername === 'borcegui') && loginPassword === 'borcegui2026') {
+      setIsAuthenticated(true);
+      setLoginError(null);
+    } else {
+      setLoginError('Usuario o contraseña incorrectos. Verifica tus credenciales de acceso.');
+    }
+  };
 
   // Edit/Create Product Modal State
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -95,6 +115,7 @@ export default function AdminDashboard() {
         hero_subtitle: config.hero_subtitle || 'FÁCIL DE PONER, FÁCIL DE AJUSTAR.',
         hero_image_url: config.hero_image_url || 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000',
         hero_cta_text: config.hero_cta_text || 'Explorar Catálogo 2026',
+        hero_slides: config.hero_slides || [],
         updated_at: new Date().toISOString()
       };
 
@@ -302,6 +323,71 @@ export default function AdminDashboard() {
       showNotification(`Excepción al eliminar: ${e?.message || e}`, true);
     }
   };
+
+  // --- LOGIN GUARD FOR ADMIN OFFICE ---
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white font-sans flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="max-w-md w-full bg-zinc-900/80 border border-zinc-800 rounded-3xl p-8 space-y-6 backdrop-blur-md shadow-2xl relative z-10 animate-in zoom-in-95 duration-200">
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl flex items-center justify-center mx-auto text-cyan-400">
+              <Lock className="w-7 h-7" />
+            </div>
+            <h2 className="text-2xl font-black text-white tracking-tight">Acceso Privado Admin</h2>
+            <p className="text-xs text-zinc-400">Ingresa tus credenciales oficiales para gestionar la tienda Borceguí</p>
+          </div>
+
+          {loginError && (
+            <div className="p-3 bg-red-500/10 border border-red-500/40 rounded-xl text-red-400 text-xs font-semibold text-center animate-bounce">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">Usuario Admin</label>
+              <input
+                type="text"
+                value={loginUsername}
+                onChange={(e) => setLoginUsername(e.target.value)}
+                placeholder="admin"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
+                required
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">Contraseña</label>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3.5 bg-cyan-400 hover:bg-cyan-300 text-black font-black text-sm rounded-xl uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all"
+            >
+              <LogIn className="w-4 h-4" />
+              Iniciar Sesión en Panel Admin
+            </button>
+          </form>
+
+          <div className="text-center pt-2 border-t border-zinc-800/60">
+            <Link href="/" className="text-xs text-zinc-400 hover:text-cyan-400 transition-colors">
+              ← Volver a la Tienda Pública
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-sans">
@@ -542,100 +628,162 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Bloque 2: Gestión Total del Banner Principal (Hero) */}
-              <div className="space-y-4 bg-zinc-950 p-5 rounded-2xl border border-zinc-800/80">
-                <h3 className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-cyan-400" />
-                  2. Gestión del Banner Principal (Hero Landing Page)
-                </h3>
+              {/* Bloque 2: Gestión Total del Banner Carrusel Rotativo (Hero Multi-Slide) */}
+              <div className="space-y-5 bg-zinc-950 p-5 rounded-2xl border border-zinc-800/80">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-cyan-400" />
+                    2. Gestión del Carrusel Rotativo Hero (Banners Publicitarios)
+                  </h3>
+                  <span className="text-[11px] text-zinc-400 font-mono">
+                    {(config.hero_slides || []).length} Banners Activos
+                  </span>
+                </div>
 
-                <div className="space-y-3">
-                  <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                    Imagen Publicitaria del Banner (Archivo Local o URL)
+                {/* Form to add a new slide to the carousel */}
+                <div className="p-4 bg-zinc-900/80 rounded-2xl border border-zinc-800 space-y-4">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <Plus className="w-3.5 h-3.5 text-cyan-400" />
+                    Agregar Nueva Imagen Publicitaria al Carrusel Rotativo
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-semibold text-zinc-300">Título del Banner</label>
+                      <input
+                        type="text"
+                        value={newSlideTitle}
+                        onChange={(e) => setNewSlideTitle(e.target.value)}
+                        placeholder="NUEVA COLECCIÓN DEPORTIVA 2026"
+                        className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-semibold text-zinc-300">Subtítulo Destacado</label>
+                      <input
+                        type="text"
+                        value={newSlideSubtitle}
+                        onChange={(e) => setNewSlideSubtitle(e.target.value)}
+                        placeholder="MÁXIMA RESISTENCIA Y ERGONOMÍA URBANA"
+                        className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-semibold text-zinc-300 block">Imagen (Local o URL)</label>
+                    <div className="flex gap-2 items-center">
+                      <label className="flex-1 bg-zinc-950 border border-dashed border-zinc-700 hover:border-cyan-500 rounded-xl px-3 py-2 cursor-pointer text-center text-xs font-bold text-cyan-400 transition-all">
+                        <span>📁 Elegir Imagen del Dispositivo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                if (reader.result) {
+                                  setNewSlideImage(reader.result as string);
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+
+                      <input
+                        type="url"
+                        value={newSlideImage}
+                        onChange={(e) => setNewSlideImage(e.target.value)}
+                        placeholder="o pega una URL de imagen..."
+                        className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  {newSlideImage && (
+                    <div className="flex items-center gap-3 bg-zinc-950 p-2 rounded-xl border border-zinc-800">
+                      <img src={newSlideImage} alt="Preview" className="w-14 h-14 object-cover rounded-lg border border-zinc-800" />
+                      <span className="text-xs text-zinc-400">Vista previa lista para agregar</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newSlideImage) {
+                        showNotification('Por favor selecciona o pega una URL de imagen para la diapositiva.', true);
+                        return;
+                      }
+                      const slideItem: HeroSlide = {
+                        id: `slide-${Date.now()}`,
+                        image_url: newSlideImage,
+                        title: newSlideTitle || 'NUEVO CALZADO BORCEGUÍ',
+                        subtitle: newSlideSubtitle || 'TECNOLOGÍA DE DIAL GIRATORIO',
+                        badge_text: newSlideBadge || 'EDICIÓN ESPECIAL'
+                      };
+                      const existing = config.hero_slides || [];
+                      setConfig({ ...config, hero_slides: [...existing, slideItem] });
+                      setNewSlideImage('');
+                      setNewSlideTitle('');
+                      setNewSlideSubtitle('');
+                      showNotification('¡Imagen añadida a la lista del carrusel!');
+                    }}
+                    className="w-full py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all uppercase"
+                  >
+                    <Plus className="w-4 h-4 stroke-[3]" />
+                    Añadir al Carrusel Publicitario
+                  </button>
+                </div>
+
+                {/* List of active slides in carousel */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block">
+                    Banners Actualmente en el Carrusel Rotativo:
                   </label>
                   
-                  {/* Local File Picker */}
-                  <div className="flex flex-col sm:flex-row gap-3 items-stretch">
-                    <label className="flex-1 bg-zinc-900 border border-dashed border-zinc-700 hover:border-cyan-500 rounded-xl px-4 py-3 cursor-pointer text-center flex items-center justify-center gap-2 text-xs font-bold text-cyan-400 transition-all">
-                      <Sparkles className="w-4 h-4" />
-                      <span>📁 Seleccionar Imagen de mi Dispositivo (PC / Móvil)</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            if (file.size > 3 * 1024 * 1024) {
-                              showNotification('La imagen es mayor a 3MB. Por favor elige una imagen más ligera.', true);
-                              return;
-                            }
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              if (reader.result) {
-                                setConfig({ ...config, hero_image_url: reader.result as string });
-                                showNotification('Imagen cargada localmente. Presiona "Guardar Configuración" para aplicar.');
-                              }
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
+                  {(!config.hero_slides || config.hero_slides.length === 0) ? (
+                    <div className="p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800 text-center text-xs text-zinc-500 italic">
+                      Se está mostrando el banner por defecto. Agrega arriba tus propios banners publicitarios.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-2">
+                      {config.hero_slides.map((slide, sIdx) => (
+                        <div
+                          key={slide.id || sIdx}
+                          className="flex items-center justify-between p-3 bg-zinc-900 rounded-xl border border-zinc-800 gap-3"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <img src={slide.image_url} alt={slide.title} className="w-12 h-12 object-cover rounded-lg shrink-0 border border-zinc-800" />
+                            <div className="min-w-0">
+                              <p className="text-xs font-extrabold text-white truncate">{slide.title || 'Banner Publicitario'}</p>
+                              <p className="text-[11px] text-zinc-400 truncate">{slide.subtitle || 'Borceguí 2026'}</p>
+                            </div>
+                          </div>
 
-                  {/* URL Text Fallback Input */}
-                  <div className="space-y-1">
-                    <span className="text-[11px] text-zinc-400">O pega una URL directa de imagen web:</span>
-                    <input
-                      type="url"
-                      value={config.hero_image_url || ''}
-                      onChange={(e) => setConfig({ ...config, hero_image_url: e.target.value })}
-                      placeholder="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000"
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500 font-mono"
-                    />
-                  </div>
-
-                  {config.hero_image_url && (
-                    <div className="mt-2 flex items-center gap-4 bg-zinc-900 p-3 rounded-xl border border-zinc-800">
-                      <img src={config.hero_image_url} alt="Vista Previa Banner" className="w-20 h-20 object-cover rounded-xl border border-zinc-800 shadow-md" />
-                      <div>
-                        <p className="text-xs font-bold text-white">Vista previa del banner publicitario</p>
-                        <p className="text-[11px] text-cyan-400 mt-0.5">Listo para guardarse en la configuración de la tienda</p>
-                      </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = config.hero_slides?.filter((_, idx) => idx !== sIdx);
+                              setConfig({ ...config, hero_slides: updated });
+                              showNotification('Banner removido del carrusel.');
+                            }}
+                            className="p-2 text-zinc-500 hover:text-red-400 bg-zinc-950 rounded-lg border border-zinc-800 hover:bg-red-950/40 transition-all shrink-0"
+                            title="Eliminar de Carrusel"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                      Título Principal del Hero
-                    </label>
-                    <input
-                      type="text"
-                      value={config.hero_title || ''}
-                      onChange={(e) => setConfig({ ...config, hero_title: e.target.value })}
-                      placeholder="INNOVACIÓN TOTAL EN TU PASO."
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                      Subtítulo Destacado (Gradiente)
-                    </label>
-                    <input
-                      type="text"
-                      value={config.hero_subtitle || ''}
-                      onChange={(e) => setConfig({ ...config, hero_subtitle: e.target.value })}
-                      placeholder="FÁCIL DE PONER, FÁCIL DE AJUSTAR."
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
+                <div className="space-y-2 pt-2 border-t border-zinc-800">
                   <label className="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
                     Texto del Botón Principal (CTA)
                   </label>

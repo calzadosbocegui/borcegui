@@ -13,6 +13,8 @@ import { CatalogSection } from '@/components/CatalogSection';
 import { TechSection } from '@/components/TechSection';
 import { StoreInfoSection } from '@/components/StoreInfoSection';
 
+import { MessageCircle, Instagram } from 'lucide-react';
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [config, setConfig] = useState<StoreConfig>(INITIAL_STORE_CONFIG);
@@ -38,7 +40,7 @@ export default function Home() {
           setConfig(prev => ({ ...prev, ...parsedConfig }));
         }
 
-        // Fetch Payment Methods (Direct select without order/filter columns that trigger 400 Bad Request)
+        // Fetch Payment Methods
         const { data: payData, error: payErr } = await supabase.from('payment_methods').select('*');
         if (payErr) {
           console.error('Error cargando payment_methods:', payErr);
@@ -66,16 +68,18 @@ export default function Home() {
     loadData();
   }, []);
 
+  const cleanPhone = (config.whatsapp_number || '+584246678858').replace(/[^0-9]/g, '');
+
   return (
     <CartProvider>
-      <div className="min-h-screen bg-zinc-950 text-white font-sans selection:bg-cyan-500 selection:text-black">
+      <div className="min-h-screen bg-zinc-950 text-white font-sans selection:bg-cyan-500 selection:text-black relative">
         {/* Navigation Bar */}
         <Navbar />
 
         {/* Floating Cart Modal / Drawer */}
         <CartDrawer whatsappNumber={config.whatsapp_number} />
 
-        {/* Hero Section (dinámico con el Banner del Admin y fallback al producto destacado) */}
+        {/* Hero Section (Carrusel Rotativo + Banner Admin) */}
         <HeroSection heroProduct={products[0]} config={config} />
 
         {/* History Section */}
@@ -90,11 +94,25 @@ export default function Home() {
         {/* Store Location & Official Payment Methods */}
         <StoreInfoSection config={config} paymentMethods={paymentMethods} />
 
-        {/* Premium Footer */}
+        {/* Floating WhatsApp Support Button */}
+        <a
+          href={`https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hola Borceguí 👟. Tengo una consulta sobre sus calzados.')}`}
+          target="_blank"
+          rel="noreferrer"
+          className="fixed bottom-6 right-6 z-40 p-4 rounded-full bg-emerald-500 text-black hover:bg-emerald-400 font-extrabold shadow-2xl shadow-emerald-500/40 flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 group"
+          title="Atención Personalizada por WhatsApp"
+        >
+          <MessageCircle className="w-6 h-6 fill-black stroke-emerald-500" />
+          <span className="hidden sm:inline text-xs uppercase tracking-wider font-mono">
+            Atención WhatsApp
+          </span>
+        </a>
+
+        {/* Premium Footer con Enlace Ultra Visible a Instagram */}
         <footer className="border-t border-zinc-900 bg-zinc-950 py-12 text-zinc-500 text-xs">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-extrabold">
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-black text-sm">
                 B
               </div>
               <span className="font-bold text-zinc-300">
@@ -102,18 +120,21 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-4">
               <a
                 href={config.instagram_url || "https://instagram.com/borcegui2026"}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors font-mono font-bold bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/30"
+                className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 border border-pink-500/40 hover:border-pink-400 text-white font-extrabold text-xs transition-all hover:scale-105 shadow-lg shadow-pink-500/10 group"
               >
-                <span>📸</span>
-                <span>{config.instagram_handle || "@borcegui2026"}</span>
+                <Instagram className="w-4 h-4 text-pink-400 group-hover:scale-110 transition-transform" />
+                <span className="text-pink-300 font-mono tracking-wider">VISÍTANOS EN INSTAGRAM</span>
+                <span className="text-cyan-400 font-mono font-bold bg-zinc-950/80 px-2 py-0.5 rounded-lg border border-zinc-800">
+                  {config.instagram_handle || "@borcegui2026"}
+                </span>
               </a>
-              <span>•</span>
-              <span className="text-zinc-400">Chacao, Caracas</span>
+              <span className="text-zinc-600 hidden sm:inline">•</span>
+              <span className="text-zinc-400 font-mono">Chacao, Caracas VE</span>
             </div>
           </div>
         </footer>

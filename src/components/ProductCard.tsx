@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Product } from '@/types/database';
 import { useCart } from '@/context/CartContext';
-import { ShoppingBag, ChevronLeft, ChevronRight, Check, Zap } from 'lucide-react';
+import { ShoppingBag, ChevronLeft, ChevronRight, Check, Zap, Share2 } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -61,21 +61,36 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
 
-          {/* Category Badge & Code */}
-          <div className="absolute top-3 left-3 flex gap-2">
-            <span className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800 text-cyan-400 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
-              {product.category}
-            </span>
-            {product.model_code && (
-              <span className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800 text-zinc-300 text-[10px] font-mono font-bold px-2 py-1 rounded-full">
-                {product.model_code}
+          {/* Category Badge, Code & WhatsApp Share Button */}
+          <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
+            <div className="flex gap-2">
+              <span className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800 text-cyan-400 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
+                {product.category}
               </span>
-            )}
+              {product.model_code && (
+                <span className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800 text-zinc-300 text-[10px] font-mono font-bold px-2 py-1 rounded-full">
+                  {product.model_code}
+                </span>
+              )}
+            </div>
+
+            {/* Quick Share via WhatsApp button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const shareText = encodeURIComponent(`¡Mira este calzado Borceguí! 👟\n*${product.name}*\nRef: ${product.model_code || 'BORCEGUI'}\nPrecio: $${product.price.toFixed(2)}\n\nVer en tienda: ${window.location.origin}`);
+                window.open(`https://wa.me/?text=${shareText}`, '_blank');
+              }}
+              title="Compartir por WhatsApp"
+              className="p-1.5 rounded-full bg-emerald-500/90 text-black hover:bg-emerald-400 shadow-md transition-all active:scale-95"
+            >
+              <Share2 className="w-3.5 h-3.5 stroke-[2.5]" />
+            </button>
           </div>
 
           {/* Quick Zoom Hint Badge */}
-          <span className="absolute bottom-3 right-3 bg-zinc-950/80 backdrop-blur-md text-zinc-300 text-[10px] font-semibold px-2 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity border border-zinc-800">
-            🔍 Ver Detalles & Fotos ({images.length})
+          <span className="absolute bottom-3 right-3 bg-zinc-950/80 backdrop-blur-md text-cyan-400 text-[10px] font-semibold px-2 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity border border-zinc-800">
+            🔍 Ver Detalles & Tallas ({images.length})
           </span>
 
           {/* Image Controls if multiple */}
@@ -109,7 +124,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
         </div>
 
-        {/* Product Details */}
+        {/* Product Details (Limpio en el Catálogo: Solo Nombre, Descripción breve y Precio) */}
         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
           <div>
             <div className="flex justify-between items-start">
@@ -126,71 +141,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </p>
           </div>
 
-          {/* Interactive Size Selector */}
-          <div onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-semibold text-zinc-300">Seleccionar Talla:</span>
-              {sizeError && (
-                <span className="text-[11px] text-red-400 font-medium animate-bounce">
-                  ¡Elige una talla!
-                </span>
-              )}
-            </div>
-
-            <div className="grid grid-cols-4 gap-2">
-              {sizes.length === 0 ? (
-                <div className="col-span-4 text-xs text-zinc-500 italic text-center py-1">
-                  Tallas disponibles al consultar
-                </div>
-              ) : (
-                sizes.map((s) => {
-                  const available = s.stock > 0;
-                  const isSelected = selectedSize === s.size;
-
-                  return (
-                    <button
-                      key={s.id || s.size}
-                      disabled={!available}
-                      onClick={() => {
-                        setSelectedSize(s.size);
-                        setSizeError(false);
-                      }}
-                      className={`py-1.5 text-xs font-bold rounded-lg border transition-all ${
-                        isSelected
-                          ? 'bg-cyan-500 text-black border-cyan-400 shadow-md shadow-cyan-500/20'
-                          : available
-                          ? 'bg-zinc-950 text-zinc-200 border-zinc-800 hover:border-zinc-600 hover:text-white'
-                          : 'bg-zinc-950/40 text-zinc-600 border-zinc-900 cursor-not-allowed line-through'
-                      }`}
-                    >
-                      {s.size}
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          </div>
-
-          {/* Add to Cart Button */}
+          {/* Botón Ver Detalles / Descripción Completa & Tallas */}
           <button
-            onClick={handleAddToCart}
-            className={`w-full py-3 px-4 rounded-xl font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-all ${
-              addedAnimation
-                ? 'bg-emerald-500 text-black'
-                : 'bg-gradient-to-r from-zinc-100 to-zinc-300 text-black hover:from-cyan-400 hover:to-cyan-500 hover:shadow-lg hover:shadow-cyan-500/25'
-            }`}
+            onClick={() => setIsDetailModalOpen(true)}
+            className="w-full py-3 px-4 rounded-xl font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 bg-gradient-to-r from-zinc-900 to-zinc-950 text-cyan-400 border border-zinc-800 hover:border-cyan-500/50 hover:bg-zinc-900 transition-all shadow-md"
           >
-            {addedAnimation ? (
-              <>
-                <Check className="w-4 h-4 stroke-[3]" />
-                ¡Agregado al Carrito!
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="w-4 h-4" />
-                Agregar al Carrito
-              </>
-            )}
+            <span>Ver Descripción Completa & Tallas</span>
+            <span className="text-sm">➔</span>
           </button>
         </div>
       </div>

@@ -1,8 +1,6 @@
-"use client";
-
-import React from 'react';
+import React, { useState } from 'react';
 import { PaymentMethod, StoreConfig } from '@/types/database';
-import { MapPin, CreditCard, DollarSign, Smartphone, Landmark, Wallet, CheckCircle, ShieldCheck } from 'lucide-react';
+import { MapPin, CreditCard, DollarSign, Smartphone, Landmark, Wallet, ShieldCheck, Copy, Check } from 'lucide-react';
 
 interface StoreInfoSectionProps {
   config: StoreConfig | null;
@@ -11,6 +9,13 @@ interface StoreInfoSectionProps {
 
 export const StoreInfoSection: React.FC<StoreInfoSectionProps> = ({ config, paymentMethods }) => {
   const defaultAddress = config?.store_address || "Calle Páez, Edificio Capri, Chacao, Caracas, Venezuela";
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopyDetails = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   // Helper icon mapper
   const renderPaymentIcon = (name: string) => {
@@ -21,6 +26,17 @@ export const StoreInfoSection: React.FC<StoreInfoSectionProps> = ({ config, paym
     if (lower.includes('paypal')) return <Wallet className="w-5 h-5 text-indigo-400" />;
     return <CreditCard className="w-5 h-5 text-cyan-400" />;
   };
+
+  const defaultPaymentsList = [
+    { id: 'zelle-def', name: 'Zelle', details: 'Transferencias USD | borcegui.ve@gmail.com' },
+    { id: 'bancamiga-def', name: 'Bancamiga', details: 'Cuenta Corriente #0172-0110-33-1100452391' },
+    { id: 'pagomovil-def', name: 'Pago Móvil', details: 'Bancamiga (0172) | 0424-6678858 | J-504938210' },
+    { id: 'paypal-def', name: 'PayPal', details: 'pagos@borcegui.com' },
+    { id: 'efectivo-def', name: 'Efectivo', details: 'USD ($) y EUR (€) en showroom y delivery' },
+    { id: 'punto-def', name: 'Punto de Venta', details: 'Débito / Crédito directo en showroom' },
+  ];
+
+  const listToRender = paymentMethods.length > 0 ? paymentMethods : defaultPaymentsList;
 
   return (
     <section id="tienda" className="py-20 bg-zinc-950 border-t border-zinc-900 text-white relative">
@@ -69,59 +85,53 @@ export const StoreInfoSection: React.FC<StoreInfoSectionProps> = ({ config, paym
             </div>
           </div>
 
-          {/* Right Column: Official Payment Methods */}
+          {/* Right Column: Official Payment Methods with Quick Copy */}
           <div className="lg:col-span-7 bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 space-y-6">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
                 <CreditCard className="w-3.5 h-3.5" />
                 MÉTODOS DE PAGO OFICIALES
               </div>
-              <h3 className="text-2xl font-black text-white">Pagos Rápidos y Seguros</h3>
+              <h3 className="text-2xl font-black text-white">Pagos Rápidos y Copia en 1 Clic</h3>
               <p className="text-zinc-400 text-sm">
-                Aceptamos múltiples opciones para facilitar tu compra nacional e internacional:
+                Toca el botón de copia para pegar los datos bancarios directamente en tu app:
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {paymentMethods.length === 0 ? (
-                /* Fallback layout matching official requested list if DB query loading */
-                [
-                  { name: 'Zelle', details: 'Transferencias en USD al instante' },
-                  { name: 'Bancamiga', details: 'Cuentas nacionales en Bs y USD' },
-                  { name: 'Pago Móvil', details: 'Disponible para todos los bancos en VE' },
-                  { name: 'PayPal', details: 'Pagos con tarjeta de crédito/débito' },
-                  { name: 'Efectivo', details: 'Dólares ($) y Euros (€) en tienda y delivery' },
-                  { name: 'Punto de Venta', details: 'Tarjetas de débito/crédito en nuestro showroom' },
-                ].map((pm, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800/80 flex items-start gap-3 hover:border-zinc-700 transition-all"
-                  >
-                    <div className="p-2 bg-zinc-900 rounded-xl">
-                      {renderPaymentIcon(pm.name)}
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-white">{pm.name}</h4>
-                      <p className="text-xs text-zinc-400 mt-0.5">{pm.details}</p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                paymentMethods.map((pm) => (
+              {listToRender.map((pm) => {
+                const isCopied = copiedId === pm.id;
+                return (
                   <div
                     key={pm.id}
-                    className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800/80 flex items-start gap-3 hover:border-zinc-700 transition-all"
+                    className="p-4 bg-zinc-950 rounded-2xl border border-zinc-800/80 flex items-start justify-between gap-3 hover:border-cyan-500/40 transition-all group"
                   >
-                    <div className="p-2 bg-zinc-900 rounded-xl">
-                      {renderPaymentIcon(pm.name)}
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-zinc-900 rounded-xl shrink-0">
+                        {renderPaymentIcon(pm.name)}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-white">{pm.name}</h4>
+                        <p className="text-xs text-zinc-400 mt-0.5 font-mono select-all leading-relaxed">
+                          {pm.details}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-white">{pm.name}</h4>
-                      <p className="text-xs text-zinc-400 mt-0.5">{pm.details}</p>
-                    </div>
+
+                    <button
+                      onClick={() => handleCopyDetails(pm.id, `${pm.name}: ${pm.details}`)}
+                      title="Copiar datos bancarios"
+                      className={`p-2 rounded-xl border transition-all shrink-0 ${
+                        isCopied
+                          ? 'bg-emerald-500 text-black border-emerald-400'
+                          : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800 border-zinc-800'
+                      }`}
+                    >
+                      {isCopied ? <Check className="w-4 h-4 stroke-[3]" /> : <Copy className="w-4 h-4" />}
+                    </button>
                   </div>
-                ))
-              )}
+                );
+              })}
             </div>
           </div>
 

@@ -1,3 +1,12 @@
+export interface HeroSlide {
+  id: string;
+  image_url: string;
+  title?: string;
+  subtitle?: string;
+  badge_text?: string;
+  target_product_id?: string;
+}
+
 export interface StoreConfig {
   id: string;
   key?: string;
@@ -10,6 +19,7 @@ export interface StoreConfig {
   hero_subtitle?: string;
   hero_image_url?: string;
   hero_cta_text?: string;
+  hero_slides?: HeroSlide[];
   updated_at?: string;
 }
 
