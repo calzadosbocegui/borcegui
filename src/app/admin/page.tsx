@@ -148,7 +148,7 @@ export default function AdminDashboard() {
   const handleOpenNewProduct = () => {
     const timestampCode = Math.floor(1000 + Math.random() * 9000);
     setEditingProduct({
-      id: `prod-${Date.now()}`,
+      id: '',
       name: '',
       model_code: `BORC-${timestampCode}`,
       description: '',
@@ -169,7 +169,7 @@ export default function AdminDashboard() {
   const handleOpenEditProduct = (prod: Product) => {
     setEditingProduct({
       ...prod,
-      model_code: prod.model_code || `BORC-${prod.id.slice(0, 6).toUpperCase()}`,
+      model_code: prod.model_code || `BORC-${String(prod.id).slice(0, 6).toUpperCase()}`,
     });
     if (prod.product_sizes && prod.product_sizes.length > 0) {
       setEditingSizes(prod.product_sizes.map(s => ({ size: s.size, stock: s.stock })));
@@ -206,44 +206,59 @@ export default function AdminDashboard() {
     }
 
     setLoading(true);
-    const prodId = editingProduct.id || `prod-${Date.now()}`;
+    const isEditing = !!(editingProduct.id && !editingProduct.id.startsWith('prod-'));
     const modelCode = editingProduct.model_code.trim().toUpperCase();
 
-    const newProd: Product = {
-      id: prodId,
-      name: editingProduct.name,
-      model_code: modelCode,
-      description: editingProduct.description || '',
-      price: Number(editingProduct.price),
-      category: (editingProduct.category as 'deportiva' | 'casual') || 'deportiva',
-      images: editingProduct.images && editingProduct.images.length > 0 ? editingProduct.images : ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800'],
-      features: editingProduct.features || [],
-      product_sizes: editingSizes.map((s, idx) => ({ id: `size-${idx}`, product_id: prodId, size: s.size, stock: Number(s.stock) }))
-    };
-
-    // Attempt Supabase Upsert with model_code payload
     try {
-      const { error: prodError } = await supabase.from('products').upsert({
-        id: newProd.id,
-        name: newProd.name,
-        model_code: newProd.model_code,
-        description: newProd.description,
-        price: newProd.price,
-        category: newProd.category,
-        images: newProd.images
-      });
+      let savedId: string;
 
-      if (prodError) {
-        console.error('Error guardando producto en Supabase:', prodError);
-        showNotification(`Error Supabase Productos [${prodError.code}]: ${prodError.message}`, true);
-        setLoading(false);
-        return;
+      if (isEditing) {
+        // UPDATE existing product
+        const { error: prodError } = await supabase.from('products').upsert({
+          id: editingProduct.id,
+          name: editingProduct.name,
+          model_code: modelCode,
+          description: editingProduct.description || '',
+          price: Number(editingProduct.price),
+          category: editingProduct.category || 'deportiva',
+          images: editingProduct.images && editingProduct.images.length > 0 ? editingProduct.images : ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800'],
+        });
+
+        if (prodError) {
+          console.error('Error actualizando producto en Supabase:', prodError);
+          showNotification(`Error Supabase Productos [${prodError.code}]: ${prodError.message}`, true);
+          setLoading(false);
+          return;
+        }
+        savedId = String(editingProduct.id);
+      } else {
+        // INSERT new product without id field so database generates it
+        const { data: insertedData, error: prodError } = await supabase
+          .from('products')
+          .insert({
+            name: editingProduct.name,
+            model_code: modelCode,
+            description: editingProduct.description || '',
+            price: Number(editingProduct.price),
+            category: editingProduct.category || 'deportiva',
+            images: editingProduct.images && editingProduct.images.length > 0 ? editingProduct.images : ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800'],
+          })
+          .select('id')
+          .single();
+
+        if (prodError || !insertedData) {
+          console.error('Error insertando producto en Supabase:', prodError);
+          showNotification(`Error Supabase Productos [${prodError?.code}]: ${prodError?.message}`, true);
+          setLoading(false);
+          return;
+        }
+        savedId = String(insertedData.id);
       }
 
-      // Delete & Insert sizes
-      await supabase.from('product_sizes').delete().eq('product_id', newProd.id);
+      // Delete & Insert sizes with valid numeric/generated savedId
+      await supabase.from('product_sizes').delete().eq('product_id', savedId);
       const { error: sizeError } = await supabase.from('product_sizes').insert(
-        editingSizes.map(s => ({ product_id: newProd.id, size: s.size, stock: Number(s.stock) }))
+        editingSizes.map(s => ({ product_id: savedId, size: s.size, stock: Number(s.stock) }))
       );
 
       if (sizeError) {
@@ -253,17 +268,8 @@ export default function AdminDashboard() {
         showNotification('¡Producto y tallas guardados exitosamente en Supabase!');
       }
 
-      // Update Local State on Success
-      setProducts(prev => {
-        const idx = prev.findIndex(p => p.id === prodId);
-        if (idx > -1) {
-          const updated = [...prev];
-          updated[idx] = newProd;
-          return updated;
-        }
-        return [newProd, ...prev];
-      });
-
+      // Refresh real data from DB
+      await fetchAdminData();
       setIsProductModalOpen(false);
     } catch (err: any) {
       console.error('Excepción guardando producto:', err);
