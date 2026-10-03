@@ -1,0 +1,21 @@
+{
+  "name": "Borceguí",
+  "short_name": "Borceguí",
+  "description": "Calzado vanguardista con sistema de ajuste rápido de dial giratorio sin cordones.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#06b6d4",
+  "icons": [
+    {
+      "src": "/logo-borcegui.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-borcegui.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

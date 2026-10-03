@@ -13,7 +13,8 @@ import { CatalogSection } from '@/components/CatalogSection';
 import { TechSection } from '@/components/TechSection';
 import { StoreInfoSection } from '@/components/StoreInfoSection';
 
-import { MessageCircle, Instagram } from 'lucide-react';
+import { SplashScreen } from '@/components/SplashScreen';
+import { MessageCircle, Share2 } from 'lucide-react';
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
@@ -72,6 +73,9 @@ export default function Home() {
 
   return (
     <CartProvider>
+      {/* Animated Splash Screen */}
+      <SplashScreen />
+
       <div className="min-h-screen bg-zinc-950 text-white font-sans selection:bg-cyan-500 selection:text-black relative">
         {/* Navigation Bar */}
         <Navbar />
@@ -108,12 +112,12 @@ export default function Home() {
           </span>
         </a>
 
-        {/* Premium Footer con Enlace Ultra Visible a Instagram */}
+        {/* Premium Footer con Enlace Ultra Visible a Instagram y Logo Oficial */}
         <footer className="border-t border-zinc-900 bg-zinc-950 py-12 text-zinc-500 text-xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-black text-sm">
-                B
+              <div className="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center p-1">
+                <img src="/logo-borcegui.png" alt="Borceguí Logo" className="w-full h-full object-contain" />
               </div>
               <span className="font-bold text-zinc-300">
                 BORCEGUÍ © 2026. Todos los derechos reservados.
@@ -127,7 +131,7 @@ export default function Home() {
                 rel="noreferrer"
                 className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 border border-pink-500/40 hover:border-pink-400 text-white font-extrabold text-xs transition-all hover:scale-105 shadow-lg shadow-pink-500/10 group"
               >
-                <Instagram className="w-4 h-4 text-pink-400 group-hover:scale-110 transition-transform" />
+                <Share2 className="w-4 h-4 text-pink-400 group-hover:scale-110 transition-transform" />
                 <span className="text-pink-300 font-mono tracking-wider">VISÍTANOS EN INSTAGRAM</span>
                 <span className="text-cyan-400 font-mono font-bold bg-zinc-950/80 px-2 py-0.5 rounded-lg border border-zinc-800">
                   {config.instagram_handle || "@borcegui2026"}
